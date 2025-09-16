@@ -23,3 +23,11 @@ Fall 2023 and Summer 2024 - Embedded Software Engineering Intern at GE Appliance
 * Agile/Scrum
 * Data Analysis
 * Python Programming
+
+### Project Search Criteria
+Very open ended and open to a lot of projects. See below for possible general topics/ideas
+* Embedded Device Design
+* Website/App Design
+* Machine Learning product
+* Industry Project
+* Data Analysis heavy project
