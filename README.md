@@ -16,7 +16,7 @@
 7. Self-Assessments
 -   [Michael](documentation/Capstone_assessment_michael.docx)
 -   [Chris](documentation/ChrisEssay)
--   [JP]()
+-   [JP](documentation/Michael_bio.md)
 8. [Professional Biographies](biographies.md)
 -   [Michael](documentation/Michael_bio.md)
 -   [Chris](documentation/Chris_bio.md)
