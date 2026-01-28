@@ -26,19 +26,40 @@ st.set_page_config(page_title="Evergreen Classrooms", page_icon="🌲", layout="
 st.title("Evergreen Classrooms")
 
 # subsections
+subtopic_dict = {
+    "2.1": " - Vectors",
+    "2.2": " - One-Dimensional Vectors",
+    "2.3": " - 2D Coordinate System & Vectors",
+    "2.4": " - 3D Coordinate System & Vectors",
+    "2.5": " - Unit Vectors",
+    "2.6": " - Vector Addition",
+    "2.7": " - Dot Products",
+    "2.8": " - Cross Products",
+
+    "4.1": " - Moment of Force",
+    "4.2": " - Scalar Addition of Moments",
+    "4.3": " - Varignon's Theorem",
+    "4.4": " - 3D Moments",
+    "4.5": " - Couples",
+    "4.6": " - Equivalent Transformations",
+    "4.7": " - Statically Equivalent Systems"
+}
+
 subtopics_by_unit = {
-    1: ["1.1", "1.2", "1.3"],
-    2: ["2.1", "2.2", "2.3"],
-    3: ["3.1", "3.2", "3.3"],
-    4: ["4.1", "4.2", "4.3"],
-    5: ["5.1", "5.2", "5.3"],
+    2: ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8"],
+    4: ["4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7"]
 }
 
 # sections
-unit = st.selectbox("Select Unit", options=[1, 2, 3, 4, 5], index=0)
+unit_dict = {
+    2: "Chapter 2 - Forces and Other Vectors",
+    4: "Chapter 4 - Moments and Static Equivalence"
+}
+
+unit = st.selectbox("Select Unit", options=[2, 4], index=0, format_func = lambda x: unit_dict.get(x))
 
 subtopic_options = subtopics_by_unit.get(unit, [f"{unit}.1"])
-subtopic = st.selectbox("Select Subtopic", options=subtopic_options, index=0)
+subtopic = st.selectbox("Select Subtopic", options=subtopic_options, index=0, format_func = lambda x: x + str(subtopic_dict.get(x)))
 
 st.divider()
 
