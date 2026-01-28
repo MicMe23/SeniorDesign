@@ -41,4 +41,4 @@ def generate_force_matrtix_with_n_vectors(n):
         #
         
 
-generate_force_matrtix_with_n_vectors(20)
+generate_force_matrtix_with_n_vectors(5)
