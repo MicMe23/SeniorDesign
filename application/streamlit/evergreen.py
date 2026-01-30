@@ -2,7 +2,7 @@ import streamlit as st
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-
+from application.test_api import *
 
 # example PDF generator
 def make_pdf_bytes(title_text: str) -> bytes:
@@ -61,18 +61,11 @@ unit = st.selectbox("Select Unit", options=[2, 4], index=0, format_func = lambda
 subtopic_options = subtopics_by_unit.get(unit, [f"{unit}.1"])
 subtopic = st.selectbox("Select Subtopic", options=subtopic_options, index=0, format_func = lambda x: x + str(subtopic_dict.get(x)))
 
+domain = st.selectbox("Select Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
+
 st.divider()
 
 # Confirm button makes pdf
-if st.button("Confirm", type="primary"):
-    pdf_bytes = make_pdf_bytes("nothing important right now")
-
-    filename = f"EvergreenClassrooms_Unit{unit}_Topic{subtopic}.pdf"
-    st.success(f"Created Unit {unit}, Subtopic {subtopic}")
-
-    st.download_button(
-        label="Download PDF",
-        data=pdf_bytes,
-        file_name=filename,
-        mime="application/pdf",
-    )
+if st.button("Generate a problem", type="primary"):
+    word_problem = generate_problem(domain, unit, subtopic)
+    st.text(word_problem)
