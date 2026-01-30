@@ -1,0 +1,18 @@
+generate engineering problems for Chapter 2: Forces and Other Vectors.
+
+Matrix meaning:
+- Columns: force1, force2, force3, ... , forcen
+- Rows in top to bottom order: magnitude, angle_deg, x_direction, y_direction
+- Angle is degrees counter clockwise from positive x axis.
+
+Rules:
+- Use the selected domain (aerospace / biomedical / civil) for the story context.
+- Each column is a vector. Do not assume equilibrium unless explicitly stated.
+- Some entries may be variables (e.g., F1, theta2, F3x). Treat those as unknowns for the student.
+- Do NOT reveal the numeric value of any unknown anywhere in the problem text.
+- Only use Chapter 2 concepts: magnitude, direction, components, vector addition.
+- Do NOT provide a solution.
+
+Output:
+Return ONLY the final problem text (title + scenario + given data + 3–5 student questions).
+No JSON. No markdown code fences.
