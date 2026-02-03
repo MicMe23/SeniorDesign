@@ -1,5 +1,5 @@
 console.log("Hello world");
-let data, timelineCircles;
+let data, cartesianGraph;
 
 d3.csv('data/disasters.csv')
   .then(_data => {
@@ -18,9 +18,9 @@ d3.csv('data/disasters.csv')
   	});
 
   	// Create an instance (for example in main.js)
-		timelineCircles = new TimelineCircles({
+		cartesianGraph = new CartesianGraph({
 			'parentElement': '#timeline',
-			'containerHeight': 1100,
+			'containerHeight': 1000,
 			'containerWidth': 1000
 		}, data);
 
@@ -46,8 +46,8 @@ d3.selectAll('.legend-btn').on('click', function() {
   });
 
   // Filter data accordingly and update vis
-  timelineCircles.data = data.filter(d => selectedCategory.includes(d.category)) ;
-  timelineCircles.updateVis();
+  cartesianGraph.data = data.filter(d => selectedCategory.includes(d.category)) ;
+  cartesianGraph.updateVis();
 
 });
 

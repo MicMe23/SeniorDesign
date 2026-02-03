@@ -2,7 +2,10 @@ import streamlit as st
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from application.test_api import *
+import sys
+import pathlib
+sys.path.append(str(pathlib.Path(__file__).parent.parent.parent.parent.resolve()))
+import SeniorDesign.application.test_api
 
 # example PDF generator
 def make_pdf_bytes(title_text: str) -> bytes:
@@ -67,5 +70,5 @@ st.divider()
 
 # Confirm button makes pdf
 if st.button("Generate a problem", type="primary"):
-    word_problem = generate_problem(domain, unit, subtopic)
+    word_problem = SeniorDesign.application.test_api.generate_problem(domain, unit, subtopic)
     st.text(word_problem)

@@ -1,11 +1,11 @@
-class TimelineCircles {
+class CartesianGraph {
 
   constructor(_config, _data) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 500,
-      containerHeight: _config.containerHeight || 140,
-      margin: {top: 40, right: 50, bottom: 10, left: 50},
+      containerWidth: _config.containerWidth || 1000,
+      containerHeight: _config.containerHeight || 1000,
+      margin: {top: 50, right: 50, bottom: 50, left: 50},
       tooltipPadding: _config.tooltipPadding || 15
 
     }
@@ -42,7 +42,7 @@ class TimelineCircles {
 
       // Initialize linear and ordinal scales (input domain and output range)
       vis.xScale = d3.scaleLinear()
-        .domain([0, 365])
+        .domain([-20, 20])
         .range([0, vis.width]);
 
 
