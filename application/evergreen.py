@@ -2,7 +2,7 @@ import streamlit as st
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from application.test_api import *
+from test_api import *
 
 # example PDF generator
 def make_pdf_bytes(title_text: str) -> bytes:

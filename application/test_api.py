@@ -30,7 +30,6 @@ def generate_problem(domain, unit, subtopic):
 
     matrix_name, MATRIX = load_random_matrix()
 
-
     resp = client.responses.create(
         model="gpt-5-mini",
         input=[
