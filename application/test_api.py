@@ -1,8 +1,11 @@
 import os
 import random
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
-client = OpenAI() 
+try:
+    client = OpenAI() 
+except:
+    raise OpenAIError("No API key provided.")
 
 MATRIX_DIR = "data/chapter2"
 
