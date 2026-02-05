@@ -14,8 +14,6 @@ def load_random_matrix():
     with open(os.path.join(MATRIX_DIR, chosen), "r") as f:
         return chosen, f.read()
 
-domain = "Dungeons and Dragons"
-
 def generate_problem(domain, unit, subtopic):
 
     SYSTEM = f"""You generate an {domain}-themed {unit} homework problem.
