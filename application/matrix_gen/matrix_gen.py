@@ -4,12 +4,12 @@ import numpy as np
 
 MAG_OF_COORD_RANGE = 10
 
-NUMBER_OF_ROWS_IN_FORCE_MATRIX = 5
-FORCE_NAME_ROW = 0
-FORCE_MAGNITUDE_ROW = 1
-FORCE_DIRECTION_ROW = 2
-FORCE_X_COORD_ROW = 3
-FORCE_Y_COORD_ROW = 4
+NUMBER_OF_ROWS_IN_VECTOR_MATRIX = 5
+VECTOR_NAME_ROW = 0
+VECTOR_MAGNITUDE_ROW = 1
+VECTOR_DIRECTION_ROW = 2
+VECTOR_X_COORD_ROW = 3
+VECTOR_Y_COORD_ROW = 4
 
 # helper function to calculate scalar magnitude using x and y component of the vector
 def calculate_vector_magnitude(vx, vy):
@@ -30,12 +30,12 @@ def calculate_vector_direction(vx, vy):
         raise Exception(f"Error in vector direction calculation: x = {vx}, y = {vy}")
     return theta
 
-# The following function generates a matrix of forces for a magnitude and direction of n
+# The following function generates a matrix of vectors for a magnitude and direction of n
 # vectors problem where n, the number of vectors is passed through
-def generate_force_matrtix_with_n_vectors(n):
-    force_data = []
+def generate_vector_matrtix_with_n_vectors(n):
+    vector_data = []
     
-    for force_num in range(n):
+    for vector_num in range(n):
         x = random.randint(-MAG_OF_COORD_RANGE, MAG_OF_COORD_RANGE)
         y = random.randint(-MAG_OF_COORD_RANGE, MAG_OF_COORD_RANGE)
         
@@ -49,12 +49,18 @@ def generate_force_matrtix_with_n_vectors(n):
         magnitude = calculate_vector_magnitude(vx, vy)
         direction = calculate_vector_direction(vx, vy)
 
-        force_data.append([f"force_{force_num+1}", magnitude, direction, x, y])
+        vector_data.append([f"vector_{vector_num+1}", round(magnitude, 3), vx, vy, round(direction, 3), x, y])
 
     # Convert to numpy array and transpose
-    force_matrix = np.array(force_data).T
-    return force_matrix
+    vector_matrix = np.array(vector_data).T
+    return vector_matrix
 
-# format to three decimal places for readability
-# force_matrix = 
-print(generate_force_matrtix_with_n_vectors(3))
+output = generate_vector_matrtix_with_n_vectors(3)
+print(output)
+
+# Export to csv file
+def export_vector_matrix_to_csv(vector_matrix, filename):
+    np.savetxt(filename, vector_matrix, delimiter=",", fmt="%s")
+
+output_filepath = "data/matrix_gen_output/vector_matrix.csv"
+export_vector_matrix_to_csv(output, output_filepath)
