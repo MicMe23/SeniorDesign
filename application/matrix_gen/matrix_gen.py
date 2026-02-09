@@ -11,6 +11,10 @@ VECTOR_DIRECTION_ROW = 2
 VECTOR_X_COORD_ROW = 3
 VECTOR_Y_COORD_ROW = 4
 
+# Helper function to export to csv file
+def export_vector_matrix_to_csv(vector_matrix, filename):
+    np.savetxt(filename, vector_matrix, delimiter=",", fmt="%s")
+
 # helper function to calculate scalar magnitude using x and y component of the vector
 def calculate_vector_magnitude(vx, vy):
     return math.sqrt((vx**2) + (vy**2))
@@ -53,14 +57,16 @@ def generate_vector_matrtix_with_n_vectors(n):
 
     # Convert to numpy array and transpose
     vector_matrix = np.array(vector_data).T
+
+    # Export the vector matrix to a csv file
+    output_filepath = "data/matrix_gen_output/vector_matrix.csv"
+    export_vector_matrix_to_csv(vector_matrix, output_filepath)
+
+    # Return the vector matrix
     return vector_matrix
 
-output = generate_vector_matrtix_with_n_vectors(3)
-print(output)
+# output = generate_vector_matrtix_with_n_vectors(3)
+# print(output)
 
-# Export to csv file
-def export_vector_matrix_to_csv(vector_matrix, filename):
-    np.savetxt(filename, vector_matrix, delimiter=",", fmt="%s")
-
-output_filepath = "data/matrix_gen_output/vector_matrix.csv"
-export_vector_matrix_to_csv(output, output_filepath)
+# output_filepath = "data/matrix_gen_output/vector_matrix.csv"
+# export_vector_matrix_to_csv(output, output_filepath)
