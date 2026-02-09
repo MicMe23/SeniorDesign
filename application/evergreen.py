@@ -65,7 +65,13 @@ domain = st.selectbox("Select Major", options=["Generic", "Aerospace Engineering
 
 st.divider()
 
+if st.button("Generate a woblem", type="primary"):
+    word_problem = "Wungus"
+    with st.container(border=True, width = "content", height = 600):
+        st.text(word_problem)
+
 # Confirm button makes pdf
 if st.button("Generate a problem", type="primary"):
     word_problem = generate_problem(domain, unit, subtopic)
-    st.text(word_problem)
+    with st.container(border=True, width = "content", height = 600):
+        st.text(word_problem)
