@@ -80,6 +80,110 @@ class CartesianGraph {
         .attr('transform', `translate(${vis.xScale(0)}, 0)`)
         .call(vis.yAxis);
 
+      // ---- COLOR SCALE ----
+
+      vis.colorScale = d3.scaleOrdinal(d3.schemeTableau10);
+
       vis.updateVis(); 
   }
+
+  shortenLineForArrow(x1, y1, x2, y2, shortenPx) {
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+    let len = Math.sqrt(dx * dx + dy * dy);
+
+    if (len === 0) {
+      return { x2: x2, y2: y2 };
+    }
+
+    let ux = dx / len;
+    let uy = dy / len;
+
+    return {
+      x2: x2 - ux * shortenPx,
+      y2: y2 - uy * shortenPx
+    };
+}
+
+  updateVis() {
+    let vis = this;
+
+    if (!vis.data || vis.data.length === 0) {
+      return;
+    }
+    // ---- COLORED ARROWHEADS (one per vector) ----
+
+    vis.defs = vis.svg.select('defs');
+    if (vis.defs.empty()) {
+      vis.defs = vis.svg.append('defs');
+    }
+
+    vis.colorScale.domain(d3.range(vis.data.length));
+
+    vis.defs.selectAll('.arrowhead')
+      .data(vis.data)
+      .join('marker')
+        .attr('class', 'arrowhead')
+        .attr('id', (d, i) => `arrowhead-${i}`)
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 10)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+      .selectAll('path')
+      .data((d, i) => [i])
+      .join('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', i => vis.colorScale(i));
+
+    // Ensure stable colors by using index as the ordinal domain
+    vis.colorScale.domain(d3.range(vis.data.length));
+
+    // Group per vector (easy to extend later with labels, hover, etc.)
+    vis.vectorGroups = vis.chart.selectAll('.vector')
+      .data(vis.data)
+      .join('g')
+      .attr('class', 'vector');
+
+    // Draw the vector shaft (from origin to origin + components)
+    vis.vectorGroups.selectAll('line')
+      .data((d, i) => [{ d: d, i: i }])
+      .join('line')
+      .attr('x1', p => vis.xScale(p.d.x_location))
+      .attr('y1', p => vis.yScale(p.d.y_location))
+      .attr('x2', p => {
+        let x1 = vis.xScale(p.d.x_location);
+        let y1 = vis.yScale(p.d.y_location);
+        let x2 = vis.xScale(p.d.x_location + p.d.x_component);
+        let y2 = vis.yScale(p.d.y_location + p.d.y_component);
+
+        let shortened = vis.shortenLineForArrow(x1, y1, x2, y2, 10);
+        return shortened.x2;
+      })
+      .attr('y2', p => {
+        let x1 = vis.xScale(p.d.x_location);
+        let y1 = vis.yScale(p.d.y_location);
+        let x2 = vis.xScale(p.d.x_location + p.d.x_component);
+        let y2 = vis.yScale(p.d.y_location + p.d.y_component);
+
+        let shortened = vis.shortenLineForArrow(x1, y1, x2, y2, 10);
+        return shortened.y2;
+      })
+      .attr('stroke', p => vis.colorScale(p.i))
+      .attr('stroke-width', 2)
+      .attr('marker-end', p => `url(#arrowhead-${p.i})`);
+
+
+    // Label at the tip: A, B, C, ...
+    vis.vectorGroups.selectAll('text')
+      .data((d, i) => [{ d: d, i: i }])
+      .join('text')
+      .attr('x', p => vis.xScale(p.d.x_location + p.d.x_component) + 6)
+      .attr('y', p => vis.yScale(p.d.y_location + p.d.y_component) - 6)
+      .text(p => String.fromCharCode(65 + p.i))
+      .attr('font-size', 12)
+      .attr('fill', p => vis.colorScale(p.i));
+  }
+
 }

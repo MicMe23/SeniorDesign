@@ -1,7 +1,7 @@
 console.log("Hello world");
 let data, cartesianGraph;
 
-d3.csv('data/disasters.csv')
+d3.csv('data/vector_matrix.csv')
   .then(_data => {
   	console.log('Data loading complete. Work with dataset.');
   	data = _data;
@@ -9,12 +9,13 @@ d3.csv('data/disasters.csv')
 
     //process the data - this is a forEach function.  You could also do a regular for loop.... 
     data.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
-      	d.cost = +d.cost; // convert string 'cost' to number
-      	d.daysFromYrStart = computeDays(d.start); //note- I just created this field in each object in the array on the fly
-
-				let tokens = d.start.split("-");
-  			d.year = +tokens[0];
-
+      	// convert from strings to numbers
+        d.magnitude = +d.magnitude;
+        d.x_component = +d.x_component;
+        d.y_component = +d.y_component;
+        d.direction = +d.direction;
+        d.x_location = +d.x_location;
+        d.y_location = +d.y_location;
   	});
 
   	// Create an instance (for example in main.js)
