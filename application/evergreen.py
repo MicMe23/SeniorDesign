@@ -56,22 +56,52 @@ unit_dict = {
     4: "Chapter 4 - Moments and Static Equivalence"
 }
 
-unit = st.selectbox("Select Unit", options=[2, 4], index=0, format_func = lambda x: unit_dict.get(x))
+if "problem" not in st.session_state:
+    st.session_state.problem = ""
+if "last_meta" not in st.session_state:
+    st.session_state.last_meta = None
 
-subtopic_options = subtopics_by_unit.get(unit, [f"{unit}.1"])
-subtopic = st.selectbox("Select Subtopic", options=subtopic_options, index=0, format_func = lambda x: x + str(subtopic_dict.get(x)))
+with st.sidebar:
+    st.header("Problem Settings")
 
-domain = st.selectbox("Select Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
+    with st.form("generator_form", border=True):
+        unit = st.selectbox("Chapter", options=[2, 4], format_func=lambda x: unit_dict.get(x, str(x)))
+        subtopic_options = subtopics_by_unit.get(unit, [f"{unit}.1"])
+        subtopic = st.selectbox(
+            "Topic",
+            options=subtopic_options,
+            format_func=lambda x: f"{x} — {subtopic_dict.get(x, '')}",
+        )
+        domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
+        st.divider()
+
+        generate_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
+
+# ---------- Generate ----------
+if generate_clicked:
+    with st.spinner("Generating…"):
+        st.session_state.problem = generate_problem(domain, unit, subtopic)
+        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
+
+# ---------- Main output ----------
 st.divider()
 
-if st.button("Generate a woblem", type="primary"):
-    word_problem = "Wungus"
-    with st.container(border=True, width = "content", height = 600):
-        st.text(word_problem)
+meta = st.session_state.last_meta
+if meta:
+    st.caption(f"**Selected:** {unit_dict[meta['unit']]} • {meta['subtopic']} — {subtopic_dict.get(meta['subtopic'], '')} • {meta['domain']}")
 
-# Confirm button makes pdf
-if st.button("Generate a problem", type="primary"):
-    word_problem = generate_problem(domain, unit, subtopic)
-    with st.container(border=True, width = "content", height = 600):
-        st.text(word_problem)
+if st.session_state.problem:
+    with st.container(border=True):
+        st.subheader("Generated Problem")
+        st.code(st.session_state.problem, language="text")
+
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            if st.button("Regenerate", use_container_width=True):
+                with st.spinner("Regenerating…"):
+                    st.session_state.problem = generate_problem(domain, unit, subtopic)
+                    st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
+
+else:
+    st.info("Choose settings in the sidebar, then click **Generate problem**.")
