@@ -56,6 +56,11 @@ unit_dict = {
     4: "Chapter 4 - Moments and Static Equivalence"
 }
 
+context = {
+    "basic": "short/simple context",
+    "creative": "long/creative context"
+}
+
 if "problem" not in st.session_state:
     st.session_state.problem = ""
 if "last_meta" not in st.session_state:
@@ -72,6 +77,9 @@ with st.sidebar:
             options=subtopic_options,
             format_func=lambda x: f"{x} — {subtopic_dict.get(x, '')}",
         )
+        injection = st.text_input(label = "custom context. (do not add too much)")
+        context = st.selectbox("Context",
+                               options = context)
         domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
         st.divider()
@@ -81,8 +89,8 @@ with st.sidebar:
 # ---------- Generate ----------
 if generate_clicked:
     with st.spinner("Generating…"):
-        st.session_state.problem = generate_problem(domain, unit, subtopic)
-        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
+        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context)
+        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context}
 
 # ---------- Main output ----------
 st.divider()
