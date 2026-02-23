@@ -34,18 +34,18 @@ class CartesianGraph {
 
       // Initialize linear scales
       vis.xScale = d3.scaleLinear()
-        .domain([-20, 20])
+        .domain([-11, 11])
         .range([0, vis.width]);
 
       vis.yScale = d3.scaleLinear()
-        .domain([-20, 20]) 
+        .domain([-11, 11]) 
         .range([vis.height, 0]);
 
       // ---- GRIDLINES ----
       // Draw gridlines from the chart bounds so they fill ALL quadrants
 
       vis.xGrid = d3.axisBottom(vis.xScale)
-        .ticks(40)
+        .ticks(20)
         .tickSize(-vis.height)
         .tickFormat('');
 
@@ -55,7 +55,7 @@ class CartesianGraph {
         .call(vis.xGrid);
 
       vis.yGrid = d3.axisLeft(vis.yScale)
-        .ticks(40)
+        .ticks(20)
         .tickSize(-vis.width)
         .tickFormat('');
 
@@ -84,26 +84,26 @@ class CartesianGraph {
 
       vis.colorScale = d3.scaleOrdinal(d3.schemeTableau10);
 
+      // // Add a rectangle for the background
+      // vis.svg.append('rect')
+      //   .attr('width', vis.config.containerWidth)
+      //   .attr('height', vis.config.containerHeight)
+      //   .attr('fill', `url(#skyBackground)`); // Reference the image in the defs
+
+      // // Define the image in the defs
+      // vis.defs = vis.svg.append('defs');
+      // vis.defs.append('pattern')
+      //   .attr('id', 'skyBackground')
+      //   .attr('patternUnits', 'userSpaceOnUse')
+      //   .attr('width', vis.config.containerWidth)
+      //   .attr('height', vis.config.containerHeight)
+      //   .append('image')
+      //   .attr('xlink:href', '../../assets/aerospace/sky_background.avif') // Path to the image
+      //   .attr('width', vis.config.containerWidth)
+      //   .attr('height', vis.config.containerHeight);
+
       vis.updateVis(); 
   }
-
-  shortenLineForArrow(x1, y1, x2, y2, shortenPx) {
-    let dx = x2 - x1;
-    let dy = y2 - y1;
-    let len = Math.sqrt(dx * dx + dy * dy);
-
-    if (len === 0) {
-      return { x2: x2, y2: y2 };
-    }
-
-    let ux = dx / len;
-    let uy = dy / len;
-
-    return {
-      x2: x2 - ux * shortenPx,
-      y2: y2 - uy * shortenPx
-    };
-}
 
   updateVis() {
     let vis = this;
@@ -147,33 +147,16 @@ class CartesianGraph {
       .attr('class', 'vector');
 
     // Draw the vector shaft (from origin to origin + components)
-    vis.vectorGroups.selectAll('line')
+        vis.vectorGroups.selectAll('line')
       .data((d, i) => [{ d: d, i: i }])
       .join('line')
       .attr('x1', p => vis.xScale(p.d.x_location))
       .attr('y1', p => vis.yScale(p.d.y_location))
-      .attr('x2', p => {
-        let x1 = vis.xScale(p.d.x_location);
-        let y1 = vis.yScale(p.d.y_location);
-        let x2 = vis.xScale(p.d.x_location + p.d.x_component);
-        let y2 = vis.yScale(p.d.y_location + p.d.y_component);
-
-        let shortened = vis.shortenLineForArrow(x1, y1, x2, y2, 10);
-        return shortened.x2;
-      })
-      .attr('y2', p => {
-        let x1 = vis.xScale(p.d.x_location);
-        let y1 = vis.yScale(p.d.y_location);
-        let x2 = vis.xScale(p.d.x_location + p.d.x_component);
-        let y2 = vis.yScale(p.d.y_location + p.d.y_component);
-
-        let shortened = vis.shortenLineForArrow(x1, y1, x2, y2, 10);
-        return shortened.y2;
-      })
+      .attr('x2', p => vis.xScale(p.d.x_location + p.d.x_component))
+      .attr('y2', p => vis.yScale(p.d.y_location + p.d.y_component))
       .attr('stroke', p => vis.colorScale(p.i))
       .attr('stroke-width', 2)
       .attr('marker-end', p => `url(#arrowhead-${p.i})`);
-
 
     // Label at the tip: A, B, C, ...
     vis.vectorGroups.selectAll('text')
@@ -184,6 +167,28 @@ class CartesianGraph {
       .text(p => String.fromCharCode(65 + p.i))
       .attr('font-size', 12)
       .attr('fill', p => vis.colorScale(p.i));
+
+        // ---- F16 IMAGE AT VECTOR ORIGIN ----
+
+    const subjectObjectWidth = 100;
+    const subjectObjectHeight = 100;
+
+    vis.vectorGroups.selectAll('image')
+      .data((d, i) => [{ d: d, i: i }])
+      .join('image')
+      .attr('href', '../../assets/aerospace/f16_clipart_cropped.png') // , '../../assets/bme/man_running.png', '../../assets/mechanical/red_f1_car.png'
+      .attr('width', subjectObjectWidth)
+      .attr('height', subjectObjectHeight)
+      .attr('x', p => vis.xScale(p.d.x_location) - subjectObjectWidth / 2) // - subjectObjectWidth
+      .attr('y', p => vis.yScale(p.d.y_location) - subjectObjectHeight / 2)
+      .attr('transform', p => {
+        const x = vis.xScale(p.d.x_location);
+        const y = vis.yScale(p.d.y_location);
+        return `
+          rotate(${-p.d.direction + 180}, ${x}, ${y})
+        `; // rotate(${-p.d.direction}, ${x}, ${y})
+      });
+
   }
 
 }
