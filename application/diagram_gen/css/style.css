@@ -1,0 +1,14 @@
+.grid line {
+  stroke: #999;
+  stroke-opacity: 0.2;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.axis path,
+.axis line {
+  stroke: #000;
+}
