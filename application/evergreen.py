@@ -70,13 +70,10 @@ with st.sidebar:
     st.header("Problem Settings")
 
     with st.form("generator_form", border=True):
-        unit = st.selectbox("Chapter", options=[2, 4], format_func=lambda x: unit_dict.get(x, str(x)))
-        subtopic_options = subtopics_by_unit.get(unit, [f"{unit}.1"])
-        subtopic = st.selectbox(
-            "Topic",
-            options=subtopic_options,
-            format_func=lambda x: f"{x} — {subtopic_dict.get(x, '')}",
-        )
+        unit = st.selectbox("Chapter", options=list(unit_dict.keys()), index=0, format_func=lambda x: unit_dict[x])
+        subtopic_options = subtopics_by_unit[unit]
+        subtopic = st.selectbox("Topic", options=subtopic_options, index=0, format_func=lambda x: f"{x}{subtopic_dict.get(x, '')}"
+)
         injection = st.text_input(label = "custom context. (do not add too much)")
         context = st.selectbox("Context",
                                options = context)
