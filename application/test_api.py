@@ -34,7 +34,7 @@ def generate_problem(domain, unit, subtopic, injection, context):
     Make the question more {context}. If short, make it a basic straight-foreward homework problem. If creative, then make the question about a paragraph and give the numbers a colorful story.
     """
 
-    matrix_name, MATRIX = load_random_matrix()
+#     matrix_name, MATRIX = load_random_matrix()
 
     resp = client.responses.create(
         model="gpt-5-mini",
@@ -44,4 +44,4 @@ def generate_problem(domain, unit, subtopic, injection, context):
         ],
     )
 
-    return resp.output_text.strip()
+#     return resp.output_text.strip()
