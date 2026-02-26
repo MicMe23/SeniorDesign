@@ -87,6 +87,7 @@ def generate_problem(domain, unit, subtopic, injection, context):
     5) Under "Solution Key", output ONLY lines in this exact form:
     variable = number
 
+    for 2D coordinate system and vector problems there is no resulting vector, just solving for variables in vectors. 
     Do NOT include any other solution steps. Do NOT calculate any answers. Use the original hidden numbers from the matrix.
     """
     matrix_name, MATRIX = load_random_matrix()
