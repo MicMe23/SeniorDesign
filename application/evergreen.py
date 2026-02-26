@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -79,15 +80,44 @@ with st.sidebar:
                                options = context)
         domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
+        velocity_units = st.selectbox("Units (per second)", options=["Kilometers", "Meters", "Centimeters", "Feet"], index=0)
         st.divider()
 
         generate_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
 
+# we will replae this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
+matrix_name, matrix_path, MATRIX = load_random_matrix()
+
+if matrix_name is not None:
+    try:
+        df = pd.read_csv(matrix_path)   
+        st.subheader("Edit your data below:")
+        edited_df = st.data_editor(df, num_rows="dynamic")
+    except Exception as e:
+        st.error(f"Error reading file: {e}")
+    
+    csv_bytes = edited_df.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="Download CSV",
+        data=csv_bytes,
+        file_name=matrix_name,
+        mime="text/csv",
+        use_container_width=True,
+    )
+
+else:
+    st.info("Please generate a matrix to start editing.")
+
+
+
+
+
 # ---------- Generate ----------
 if generate_clicked:
     with st.spinner("Generating…"):
-        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context)
-        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context}
+        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, velocity_units, matrix_name, MATRIX)
+        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context, "velocity_units": velocity_units, "matrix_name": matrix_name, "MATRIX": MATRIX}
 
 # ---------- Main output ----------
 st.divider()
@@ -105,7 +135,7 @@ if st.session_state.problem:
         with col1:
             if st.button("Regenerate", use_container_width=True):
                 with st.spinner("Regenerating…"):
-                    st.session_state.problem = generate_problem(domain, unit, subtopic)
+                    st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, velocity_units, matrix_name, MATRIX)
                     st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
 
 else:
