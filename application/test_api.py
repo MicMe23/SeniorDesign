@@ -33,7 +33,7 @@ def generate_problem(domain, unit, subtopic, injection, context, velocity_units,
     RULES FOR USING THE DATA:
     - Treat the matrix values as authoritative. Do NOT compute new numbers.
     - x_location and y_location are only for where the vector is drawn from; do NOT hide them.
-    - The vector represents velocity. Always refer to the velcity in {velocity_units} per second
+    - The vector represents velocity. Always refer to the velocity in {velocity_units} per second
 
     HIDDEN VARIABLES:
     - Choose exactly ONE unknown per vector row.
@@ -101,4 +101,4 @@ def generate_problem(domain, unit, subtopic, injection, context, velocity_units,
         ],
     )
 
-#     return resp.output_text.strip()
+    return resp.output_text.strip()
