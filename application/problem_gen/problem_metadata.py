@@ -17,10 +17,9 @@ class ProblemMetadata:
         self.vector_array = vector_matrix.get_vector_array_from_vector_matrix_from_csv(csv_filepath)
 
     def set_vector_array_randomly(self):
-        self.vector_array = np.empty([]) # empty array to hold vector data, will be populated by generate_vector_matrix_with_n_vectors function
         for i in range(self.number_of_vectors):
             random_vector = vectors.generate_random_vector()
-            if self.vector_array.size == 0:
+            if i == 0:
                 self.vector_array = np.array([random_vector])
             else:
                 self.vector_array = np.append(self.vector_array, random_vector)
@@ -31,5 +30,14 @@ class ProblemMetadata:
 # problem = ProblemMetadata("magnitude_and_direction", 3)
 # problem.set_vectors_from_csv(csv_filepath)
 
+# for vector in problem.vector_array:
+#     print(f"Vector with magnitude {vector.get_magnitude():.3f}, direction {vector.get_direction():.3f}, x component {vector.x_component}, y component {vector.y_component}, x location {vector.x_location}, and y location {vector.y_location}")
+
+
+# # TEST TO SET VECTOR ARRAY RANDOMLY
+# # --------------------------------------------------
+# problem = ProblemMetadata("magnitude_and_direction", 3, "units")
+# problem.set_vector_array_randomly()
+# print(problem.vector_array)
 # for vector in problem.vector_array:
 #     print(f"Vector with magnitude {vector.get_magnitude():.3f}, direction {vector.get_direction():.3f}, x component {vector.x_component}, y component {vector.y_component}, x location {vector.x_location}, and y location {vector.y_location}")

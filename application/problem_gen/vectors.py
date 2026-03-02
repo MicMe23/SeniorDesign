@@ -8,6 +8,17 @@ def calculate_magnitude(x_component, y_component):
     return math.sqrt(x_component**2 + y_component**2)
 
 def calculate_direction(x_component, y_component):
+    # cases where components are 0 to avoid division by 0 error in atan function
+    if x_component == 0 and y_component > 0:
+        return 90
+    elif x_component == 0 and y_component < 0:
+        return 270
+    elif x_component > 0 and y_component == 0:
+        return 0
+    elif x_component < 0 and y_component == 0:
+        return 180
+    
+    # calculate direction using atan function and adjust based on quadrant of the vector, using the positive x axis as 0 degrees
     if x_component >= 0 and y_component >= 0:
         theta = math.degrees(math.atan(y_component/x_component))
     elif x_component <= 0 and y_component >= 0:
@@ -59,6 +70,12 @@ class Vector:
     
     def get_direction(self):
         return calculate_direction(self.x_component, self.y_component)
+    
+
+# # TEST TO GENERATE RANDOM VECTOR
+# # --------------------------------------------------
+# random_vector = generate_random_vector()
+# print(f"Vector with magnitude {random_vector.get_magnitude():.3f}, direction {random_vector.get_direction():.3f}, x component {random_vector.x_component}, y component {random_vector.y_component}, x location {random_vector.x_location}, and y location {random_vector.y_location}")
 
     
 
