@@ -69,6 +69,12 @@ context = {
     "Creative": "long/creative context"
 }
 
+asset_choices = {
+    "Generic": [],
+    "Aerospace Engineering": ["Plane (seen from the side)"],
+    "Biomedical Engineering": ["Person (seen from above)"]
+}
+
 # --- Unit selector ---
 # Connect a vector type to all possible measurements
 unit_types = {
@@ -91,6 +97,10 @@ if "problem" not in st.session_state:
     st.session_state.problem = ""
 if "last_meta" not in st.session_state:
     st.session_state.last_meta = None
+if "pic_seeded" not in st.session_state:
+    st.session_state.pic_seeded = True
+if "unit_seeded" not in st.session_state:
+    st.session_state.unit_seeded = True
 
 with st.sidebar:
     st.header("Problem Settings")
@@ -105,26 +115,41 @@ with st.sidebar:
         subtopic = st.selectbox("Topic", options=subtopic_options, index=0, format_func=lambda x: f"{x}{subtopic_dict.get(x, '')}")
 
         # Displays the Context prompt
-        injection = st.text_input(label = "custom context. (do not add too much)")
+        injection = st.text_input(label = "Custom context (do not add too much)")
         context = st.selectbox("Level of Detail",
                                options = context)
         
         # Displays the Major selectbox
         domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
-        # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
-        # --- We might need more than one selectable unit in the future, and assets should affect this someday
-        vector_unit = (unit)
+        if st.session_state.pic_seeded:
+            assets = asset_choices.get(domain)
+            if assets:
+                # Select asset to be used
+                asset = st.selectbox("Asset", options=assets, index = 0)
+        
+        if st.session_state.unit_seeded:
+            # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
+            # --- We might need more than one selectable unit in the future, and assets should affect this someday
+            vector_unit = (unit)
 
-        # Picks what choices for units are shown to the user based on other variables
-        unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
+            # Picks what choices for units are shown to the user based on other variables
+            unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
 
-        # Displays the Units selectbox
-        unit_selection = st.selectbox("Units", options=unit_choices, index=0)
+            # Displays the Units selectbox
+            unit_selection = st.selectbox("Units", options=unit_choices, index=0)
+
         st.divider()
 
         # Displays the Generate Problem button
-        generate_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
+        generate_prompt_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
+
+    # Displays the Generate Matrix button
+    # --- Currently does nothing, will be added to later
+    generate_matrix_clicked = st.button("Generate matrix", type="primary", use_container_width=True)
+
+    pic_seeded = st.checkbox("Picture seeding", key = "pic_seeded")
+    unit_seeded = st.checkbox("Unit seeding", key = "unit_seeded")
 
 ############################## Main Screen ##############################
 
@@ -139,15 +164,16 @@ if matrix_name is not None:
     except Exception as e:
         st.error(f"Error reading file: {e}")
     
-    csv_bytes = edited_df.to_csv(index=False).encode("utf-8")
+    # --- The data_editor already has an option to download as csv, I'm not sure this is necessary
+    #csv_bytes = edited_df.to_csv(index=False).encode("utf-8")
 
-    st.download_button(
-        label="Download CSV",
-        data=csv_bytes,
-        file_name=matrix_name,
-        mime="text/csv",
-        use_container_width=True,
-    )
+    # st.download_button(
+    #     label="Download CSV",
+    #     data=csv_bytes,
+    #     file_name=matrix_name,
+    #     mime="text/csv",
+    #     use_container_width=True,
+    # )
 
 else:
     st.info("Please generate a matrix to start editing.")
@@ -157,7 +183,7 @@ else:
 
 
 # ---------- Generate Button Logic ----------
-if generate_clicked:
+if generate_prompt_clicked:
     with st.spinner("Generating…"):
         st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
         st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context, "velocity_units": unit_selection, "matrix_name": matrix_name, "MATRIX": MATRIX}
@@ -180,11 +206,11 @@ if st.session_state.problem:
                 with st.spinner("Regenerating…"):
                     st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
                     st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
-    with st.container(border=False):
-        with open("index.html", "r", encoding="utf-8") as f:
-            html_code = f.read()
+    # with st.container(border=False):
+    #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
+    #         html_code = f.read()
 
-        component.html(html_code)
+    #     component.html(html_code)
 
 else:
     st.info("Choose settings in the sidebar, then click **Generate problem**.")
