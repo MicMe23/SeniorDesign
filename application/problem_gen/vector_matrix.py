@@ -1,5 +1,5 @@
 import numpy as np
-import vectors
+from . import vectors
 
 def write_vector_matrix_to_csv_using_vector_array(vector_array, filepath):
     headers = ["magnitude","x_component","y_component","direction","x_location","y_location"]

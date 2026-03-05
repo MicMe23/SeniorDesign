@@ -2,8 +2,8 @@ import numpy as np
 import math
 import random
 import pandas as pd
-import vectors
-import vector_matrix
+from . import vectors
+from . import vector_matrix
 
 class ProblemMetadata:
     def __init__(self, problem_type, number_of_vectors, units):
@@ -11,7 +11,7 @@ class ProblemMetadata:
         self.number_of_vectors = number_of_vectors
         self.vector_array = np.empty([]) # empty array to hold vector data, will be populated by generate_vector_matrix_with_n_vectors function
         self.units = units
-        self.solution = None # should be a list of the correct answers to the problem
+        self.solution = None # should be a list of the correct answers to the problemg
 
     def set_vector_array_from_csv(self, csv_filepath):
         self.vector_array = vector_matrix.get_vector_array_from_vector_matrix_from_csv(csv_filepath)

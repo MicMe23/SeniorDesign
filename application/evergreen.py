@@ -1,26 +1,31 @@
+# streamlit
 import streamlit as st
-import pandas as pd
-from io import BytesIO
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from test_api import *
 import streamlit.components.v1 as component
 
-# example PDF generator -- DEPRECATED
-def make_pdf_bytes(title_text: str) -> bytes:
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
+# data formatting
+import pandas as pd
+import numpy as np
 
-    c.setFont("Helvetica-Bold", 18)
-    c.drawString(72, height - 72, title_text)
+# utilities
+import random
+import math
+from io import BytesIO
 
-    #c.showPage()
-    c.save()
+# PDF stuff
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
-    buffer.seek(0)
-    return buffer.read()
+# project modules
+from application.problem_gen import vectors
+test = vectors.Vector(1,1,1,1)
+print(test.get_magnitude())
+from application.problem_gen import vector_matrix
+from application.problem_gen import problem_metadata
+from application.problem_gen import calculate_problem_solution
 
+# api and model code
+from application.test_api import *
+from application.model import *
 
 ############################## UI prep ##############################
 
@@ -93,6 +98,7 @@ unit_selector = {
 
 ############################## Sidebar ##############################
 
+# init session states
 if "problem" not in st.session_state:
     st.session_state.problem = ""
 if "last_meta" not in st.session_state:
@@ -101,6 +107,10 @@ if "pic_seeded" not in st.session_state:
     st.session_state.pic_seeded = True
 if "unit_seeded" not in st.session_state:
     st.session_state.unit_seeded = True
+if "matrix_df" not in st.session_state:
+    st.session_state.matrix_df = None
+if "matrix_name" not in st.session_state:
+    st.session_state.matrix_name = None
 
 with st.sidebar:
     st.header("Problem Settings")
@@ -145,7 +155,8 @@ with st.sidebar:
         generate_prompt_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
 
     # Displays the Generate Matrix button
-    # --- Currently does nothing, will be added to later
+    # number of vectors for generated matrix
+    num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
     generate_matrix_clicked = st.button("Generate matrix", type="primary", use_container_width=True)
 
     pic_seeded = st.checkbox("Picture seeding", key = "pic_seeded")
@@ -154,15 +165,35 @@ with st.sidebar:
 ############################## Main Screen ##############################
 
 # We will replace this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
-matrix_name, matrix_path, MATRIX = load_random_matrix()
+#matrix_name, matrix_path, MATRIX = load_random_matrix()
 
-if matrix_name is not None:
-    try:
-        df = pd.read_csv(matrix_path)   
-        st.subheader("Edit your data below:")
-        edited_df = st.data_editor(df, num_rows="dynamic")
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
+# ---------------- Matrix generation ----------------
+if generate_matrix_clicked:
+    # Create a new matrix
+    pm = problem_metadata.ProblemMetadata(
+        problem_type=subtopic,
+        number_of_vectors=int(num_vectors),
+        units=unit_selection,
+    )
+    pm.set_vector_array_randomly()
+
+    # Convert to DataFrame for the editor and LLM
+    st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
+
+    # debug line
+    st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
+
+# ---------------- csv editor ----------------
+if st.session_state.matrix_df is not None:
+    st.subheader("Edit your data below:")
+    edited_df = st.data_editor(
+        st.session_state.matrix_df,
+        num_rows="dynamic",
+        key="matrix_editor",
+    )
+    st.session_state.matrix_df = edited_df
+else:
+    st.info("Please generate a matrix to start editing.")
     
     # --- The data_editor already has an option to download as csv, I'm not sure this is necessary
     #csv_bytes = edited_df.to_csv(index=False).encode("utf-8")
@@ -174,13 +205,6 @@ if matrix_name is not None:
     #     mime="text/csv",
     #     use_container_width=True,
     # )
-
-else:
-    st.info("Please generate a matrix to start editing.")
-
-
-
-
 
 # ---------- Generate Button Logic ----------
 if generate_prompt_clicked:

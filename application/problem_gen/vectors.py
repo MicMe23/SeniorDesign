@@ -1,8 +1,29 @@
 import random
 import math
 import numpy as np
+import pandas as pd
 
 MAGNITUDE_OF_COORD_RANGE = 10
+VECTOR_HEADERS = ["magnitude", "x_component", "y_component", "direction", "x_location", "y_location"]
+
+#convert a vector to a dataframe for the csv display and to be in payload for llm
+def vectors_to_df(vector_array) -> pd.DataFrame:
+    rows = []
+    for v in vector_array:
+        rows.append({
+            "magnitude": round(v.get_magnitude(), 3),
+            "x_component": float(v.x_component),
+            "y_component": float(v.y_component),
+            "direction": round(v.get_direction(), 3),
+            "x_location": float(v.x_location),
+            "y_location": float(v.y_location),
+        })
+    return pd.DataFrame(rows, columns=VECTOR_HEADERS)
+
+# finally convert to a list of dicts for the LLM
+def df_to_matrix_payload(df: pd.DataFrame):
+    return df[VECTOR_HEADERS].to_dict(orient="records")
+
 
 def calculate_magnitude(x_component, y_component):
     return math.sqrt(x_component**2 + y_component**2)
