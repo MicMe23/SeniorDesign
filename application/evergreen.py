@@ -208,9 +208,10 @@ else:
 
 # ---------- Generate Button Logic ----------
 if generate_prompt_clicked:
+    matrix_payload = st.session_state.matrix_df.to_dict(orient="records")
     with st.spinner("Generating…"):
-        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
-        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context, "velocity_units": unit_selection, "matrix_name": matrix_name, "MATRIX": MATRIX}
+        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, st.session_state.matrix_name, matrix_payload)
+        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context, "velocity_units": unit_selection, "matrix_name": st.session_state.matrix_name, "matrix_payload": matrix_payload}
 
 # ---------- Main output ----------
 st.divider()
