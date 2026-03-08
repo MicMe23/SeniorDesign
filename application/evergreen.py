@@ -112,55 +112,52 @@ if "matrix_df" not in st.session_state:
 if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
 
-with st.sidebar:
-    st.header("Problem Settings")
+st.divider()
+st.header("Problem Settings")
+# Displays the Chapter selectbox
+unit = st.selectbox("Chapter", options=list(unit_dict.keys()), index=0, format_func=lambda x: unit_dict[x])
+subtopic_options = subtopics_by_unit[unit]
 
-    ### Everything inside the sidebar's small box ###
-    with st.form("generator_form", border=True):
-        # Displays the Chapter selectbox
-        unit = st.selectbox("Chapter", options=list(unit_dict.keys()), index=0, format_func=lambda x: unit_dict[x])
-        subtopic_options = subtopics_by_unit[unit]
+# Displays the Topic selectbox
+subtopic = st.selectbox("Topic", options=subtopic_options, index=0, format_func=lambda x: f"{x}{subtopic_dict.get(x, '')}")
 
-        # Displays the Topic selectbox
-        subtopic = st.selectbox("Topic", options=subtopic_options, index=0, format_func=lambda x: f"{x}{subtopic_dict.get(x, '')}")
+# Displays the Context prompt
+injection = st.text_input(label = "Custom context (do not add too much)")
+context = st.selectbox("Level of Detail",
+                        options = context)
 
-        # Displays the Context prompt
-        injection = st.text_input(label = "Custom context (do not add too much)")
-        context = st.selectbox("Level of Detail",
-                               options = context)
-        
-        # Displays the Major selectbox
-        domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
+# Displays the Major selectbox
+domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
-        if st.session_state.pic_seeded:
-            assets = asset_choices.get(domain)
-            if assets:
-                # Select asset to be used
-                asset = st.selectbox("Asset", options=assets, index = 0)
-        
-        if st.session_state.unit_seeded:
-            # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
-            # --- We might need more than one selectable unit in the future, and assets should affect this someday
-            vector_unit = (unit)
+if st.session_state.pic_seeded:
+    assets = asset_choices.get(domain)
+    if assets:
+        # Select asset to be used
+        asset = st.selectbox("Asset", options=assets, index = 0)
 
-            # Picks what choices for units are shown to the user based on other variables
-            unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
+if st.session_state.unit_seeded:
+    # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
+    # --- We might need more than one selectable unit in the future, and assets should affect this someday
+    vector_unit = (unit)
 
-            # Displays the Units selectbox
-            unit_selection = st.selectbox("Units", options=unit_choices, index=0)
+    # Picks what choices for units are shown to the user based on other variables
+    unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
 
-        st.divider()
+    # Displays the Units selectbox
+    unit_selection = st.selectbox("Units", options=unit_choices, index=0)
 
-        # Displays the Generate Problem button
-        generate_prompt_clicked = st.form_submit_button("Generate problem", type="primary", use_container_width=True)
+# Displays the Generate Problem button
+generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
 
-    # Displays the Generate Matrix button
-    # number of vectors for generated matrix
-    num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
-    generate_matrix_clicked = st.button("Generate matrix", type="primary", use_container_width=True)
 
-    pic_seeded = st.checkbox("Picture seeding", key = "pic_seeded")
-    unit_seeded = st.checkbox("Unit seeding", key = "unit_seeded")
+# Displays the Generate Matrix button
+# number of vectors for generated matrix
+num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
+
+pic_seeded = st.checkbox("Picture seeding", key = "pic_seeded")
+unit_seeded = st.checkbox("Unit seeding", key = "unit_seeded")
+
 
 ############################## Main Screen ##############################
 
