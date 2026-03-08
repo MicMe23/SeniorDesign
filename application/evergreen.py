@@ -9,6 +9,8 @@ import numpy as np
 # utilities
 import random
 import math
+import json
+from pathlib import Path
 from io import BytesIO
 
 # PDF stuff
@@ -28,6 +30,13 @@ from application.test_api import *
 from application.model import *
 
 ############################## UI prep ##############################
+
+# make a file named problem_metadata in the application directory which stores entry (dictionary)
+def save_problem_log(entry, filename="problem_metadata.json"):
+    log_path = Path(__file__).parent/filename
+    with open(log_path, "w", encoding="utf-8") as f:
+        json.dump(entry, f, indent=4)
+
 
 st.set_page_config(page_title="Evergreen Classrooms", page_icon="🌲", layout="centered")
 
@@ -96,8 +105,6 @@ unit_selector = {
     (4): ["Velocity", "Acceleration", "Force", "Torque"]
 }
 
-############################## Sidebar ##############################
-
 # init session states
 if "problem" not in st.session_state:
     st.session_state.problem = ""
@@ -113,7 +120,9 @@ if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
 
 st.divider()
+################ Section 1: Problem settings #################
 st.header("Problem Settings")
+
 # Displays the Chapter selectbox
 unit = st.selectbox("Chapter", options=list(unit_dict.keys()), index=0, format_func=lambda x: unit_dict[x])
 subtopic_options = subtopics_by_unit[unit]
@@ -149,7 +158,8 @@ if st.session_state.unit_seeded:
 # Displays the Generate Problem button
 generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
 
-
+st.divider()
+st.header("Matrix Gen")
 # Displays the Generate Matrix button
 # number of vectors for generated matrix
 num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
@@ -182,13 +192,14 @@ if generate_matrix_clicked:
 
 # ---------------- csv editor ----------------
 if st.session_state.matrix_df is not None:
-    st.subheader("Edit your data below:")
-    edited_df = st.data_editor(
-        st.session_state.matrix_df,
-        num_rows="dynamic",
-        key="matrix_editor",
-    )
-    st.session_state.matrix_df = edited_df
+    with st.container(border=True, width = 750):
+        st.subheader("Edit your data below:")
+        edited_df = st.data_editor(
+            st.session_state.matrix_df,
+            num_rows="dynamic",
+            key="matrix_editor",
+        )
+        st.session_state.matrix_df = edited_df
 else:
     st.info("Please generate a matrix to start editing.")
     
@@ -205,11 +216,51 @@ else:
 
 # ---------- Generate Button Logic ----------
 if generate_prompt_clicked:
-    matrix_payload = st.session_state.matrix_df.to_dict(orient="records")
-    with st.spinner("Generating…"):
-        st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, st.session_state.matrix_name, matrix_payload)
-        st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic, "custom context": injection, "context": context, "velocity_units": unit_selection, "matrix_name": st.session_state.matrix_name, "matrix_payload": matrix_payload}
+    if generate_prompt_clicked:
+        if st.session_state.matrix_df is None:
+            st.warning("Please generate a matrix first.")
+        else:
+            matrix_payload = st.session_state.matrix_df.to_dict(orient="records")
 
+            log_entry = {
+                "domain": domain,
+                "chapter": unit,
+                "chapter_name": unit_dict.get(unit),
+                "subtopic": subtopic,
+                "subtopic_name": subtopic_dict.get(subtopic, "").strip(" -"),
+                "custom_context": injection,
+                "level_of_detail": context,
+                "picture_seeding": st.session_state.pic_seeded,
+                "unit_seeding": st.session_state.unit_seeded,
+                "matrix_name": st.session_state.matrix_name,
+                "matrix_payload": matrix_payload,
+            }
+
+            if st.session_state.unit_seeded:
+                log_entry["unit_selection"] = unit_selection
+            else:
+                log_entry["unit_selection"] = None
+
+            if st.session_state.pic_seeded and "asset" in locals():
+                log_entry["asset"] = asset
+            else:
+                log_entry["asset"] = None
+
+            save_problem_log(log_entry)
+
+            with st.spinner("Generating…"):
+                st.session_state.problem = generate_problem(
+                    domain,
+                    unit,
+                    subtopic,
+                    injection,
+                    context,
+                    unit_selection,
+                    st.session_state.matrix_name,
+                    matrix_payload
+                )
+
+                st.session_state.last_meta = log_entry
 # ---------- Main output ----------
 st.divider()
 
