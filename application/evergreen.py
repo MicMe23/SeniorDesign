@@ -16,16 +16,16 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
 # project modules
-from application.problem_gen import vectors
+from problem_gen import vectors
 test = vectors.Vector(1,1,1,1)
 print(test.get_magnitude())
-from application.problem_gen import vector_matrix
-from application.problem_gen import problem_metadata
-from application.problem_gen import calculate_problem_solution
+from problem_gen import vector_matrix
+from problem_gen import problem_metadata
+from problem_gen import calculate_problem_solution
 
 # api and model code
-from application.test_api import *
-from application.model import *
+from test_api import *
+from model import *
 
 ############################## UI prep ##############################
 
@@ -231,11 +231,31 @@ if st.session_state.problem:
                 with st.spinner("Regenerating…"):
                     st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
                     st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
-    # with st.container(border=False):
-    #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
-    #         html_code = f.read()
+    with st.container(border=False):
+        # Read in unedited html and js files
+        with open("application\diagram_gen\index.html", "r") as html:
+            html_code = html.read()
+            html.close()
+        with open("application\diagram_gen\js\main.js", "r") as main:
+            html_main = main.read()
+            main.close()
+        with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
+            html_graph = graph.read()
+            graph.close()
 
-    #     component.html(html_code)
+        # Read in the csv to inject it into the html when it runs
+        df = pd.read_csv("application/diagram_gen/data/vector_matrix.csv")
+        csvInj = df.to_csv(index=False)
+            
+        # Make all scripts inline and inject the csv
+        html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
+        html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`;</script><script>{html_main}</script>')
+
+        # Debug. Shows what the component.html is receiving
+        #st.code(html_code[:2000])
+
+        # Run the flattened code and display in streamlit
+        component.html(html_code, height=1000, width=1000, scrolling=True)
 
 else:
     st.info("Choose settings in the sidebar, then click **Generate problem**.")

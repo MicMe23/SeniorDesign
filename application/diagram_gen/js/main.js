@@ -1,7 +1,7 @@
 console.log("Hello world");
 let data, cartesianGraph;
 
-d3.csv('data/vector_matrix.csv')
+Promise.resolve(d3.csvParse(injection))
   .then(_data => {
   	console.log('Data loading complete. Work with dataset.');
   	data = _data;
