@@ -7,91 +7,88 @@ try:
 except:
     raise OpenAIError("No API key provided.")
 
-def load_random_matrix():
-    MATRIX_DIR = "data/chapter2"
-    files = [f for f in os.listdir(MATRIX_DIR) if f.endswith(".csv")]
-    if not files:
-        raise RuntimeError("No matrix CSV files found.")
-    chosen = random.choice(files)
-    full_path = os.path.join(MATRIX_DIR, chosen)
-
-    with open(full_path, "r", encoding="utf-8") as f:
-        return chosen, full_path, f.read()
-
 def generate_problem(domain, unit, subtopic, injection, context, velocity_units, matrix_name, MATRIX):
 
     SYSTEM = f"""
     You are generating a {domain}-themed engineering homework problem for Unit {unit}, Subtopic {subtopic}.
 
-
-    DATA FORMAT (important):
+    DATA FORMAT:
     - The CSV matrix below has ONE HEADER ROW.
     - Each subsequent ROW represents ONE vector.
     - Columns are:
     magnitude, x_component, y_component, direction_deg, x_location, y_location
 
-    RULES FOR USING THE DATA:
-    - Treat the matrix values as authoritative. Do NOT compute new numbers.
-    - x_location and y_location are only for where the vector is drawn from; do NOT hide them.
-    - The vector represents velocity. Always refer to the velocity in {velocity_units} per second
+    GENERAL RULES:
+    - Treat all matrix values as authoritative.
+    - Do NOT compute new numbers.
+    - x_location and y_location are only for graph placement; never hide them.
+    - The vector quantity uses units of {velocity_units}.
+    - Preserve original numeric values exactly.
+    - Do not invent new numbers.
+    - Do not provide worked solutions.
 
-    HIDDEN VARIABLES:
-    - Choose exactly ONE unknown per vector row.
-    - The unknown MUST be one of: magnitude, x_component, y_component, direction_deg.
-    - Replace the chosen numeric value in the displayed matrix with a variable name (e.g., A_mag, Bx, theta_C).
-    - Do NOT reveal the hidden numeric value anywhere in the problem statement.
+    PROBLEM MODE RULES:
+    There are three possible problem modes.
 
-    RESULTANT / OPERATION RULES:
-    - Some problems require vector operations (e.g., addition/subtraction, dot product, cross product).
-    - When the backend provides an operation result, it will appear as a row labeled type = RESULTANT.
-    - Treat RESULTANT rows as GIVEN values produced by the backend. Do NOT compute or verify them.
-    - When a RESULTANT row exists:
-    - Write the problem so students are asked to compute/identify the resultant of the specified operation
-        using the GIVEN vectors, and then compare to / report the RESULTANT vector provided.
-    - Do NOT hide values inside RESULTANT rows unless the subtopic explicitly requires solving for a missing
-        resultant attribute (in that case, hide at most ONE value in the RESULTANT row).
-    - When no RESULTANT row exists:
-    - Generate an "independent vectors" style problem: hide exactly ONE value per GIVEN vector row.
+    1) independent_vectors
+    - Use this mode for subtopics where students solve for missing attributes of individual vectors.
+    - Hide exactly ONE value in each GIVEN vector row.
+    - The hidden value must be one of:
+    magnitude, x_component, y_component, direction_deg
+    - Do NOT hide x_location or y_location.
+    - Do NOT hide more than one value per vector row.
 
-    STUDENT TASKS WHEN RESULTANT EXISTS:
-    - Ask students to compute the resultant using vector operations and show their work.
-    - Ask students to report the resultant in component form and/or magnitude-angle form.
-    - The provided RESULTANT row is for answer checking; do not compute it in the solution key.
+    2) resultant_vector
+    - Use this mode for vector addition problems.
+    - GIVEN vectors should remain fully visible.
+    - A backend-provided resultant vector is included as a row labeled RESULTANT.
+    - Hide values ONLY in the RESULTANT row.
+    - Hide 1 to 2 values in the RESULTANT row only.
+    - Do NOT hide values in any GIVEN vector row.
+    - Students should be asked to compute the resultant from the visible GIVEN vectors and solve for the hidden RESULTANT values.
+    - Do not ask students to verify backend math beyond using the provided resultant row.
 
-    SOLUTION KEY RULES:
-    - The Solution Key section is for hidden matrix values or rows labeled as resultant.
-    - Only output: variable = number or vector (the original hidden numbers or vectors from the matrix).
+    3) dot_product
+    - Use this mode for dot product problems.
+    - GIVEN vectors should remain fully visible.
+    - If the backend provides a dot product result, hide only the scalar dot product value or one clearly identified attribute related to the backend-computed result.
+    - Do NOT hide values in the GIVEN vectors unless explicitly instructed otherwise.
+    - Students should be asked to compute the dot product using the visible vectors.
 
-    PROBLEM REQUIREMENTS:
-    - The story and questions must match Subtopic {subtopic} strictly (Unit {unit} scope).
-    - Use only Chapter-appropriate vector concepts (components, direction, magnitude, vector addition, dot/cross only if the subtopic is dot/cross).
-    - Provide 1-2 clear student tasks/questions.
+    MODE SELECTION:
+    - If the user message says Problem mode: independent_vectors, follow only the independent_vectors rules.
+    - If the user message says Problem mode: resultant_vector, follow only the resultant_vector rules.
+    - If the user message says Problem mode: dot_product, follow only the dot_product rules.
+
+    STORY AND TASK REQUIREMENTS:
+    - The story must match Subtopic {subtopic} strictly.
+    - Use only concepts appropriate for Unit {unit}.
+    - Provide 1 to 2 clear student tasks.
     - Keep the scenario consistent with {domain}.
-
-    TONE CONTROL:
     - User context: {injection}
     - Style: {context}
-    - If style is "short": write a straightforward homework problem (3–6 sentences).
-    - If style is "creative": write a richer scenario (8–12 sentences) but keep the math unchanged.
 
-    Display Matrix:
-    - Include a labeled "Vector" column first.
-    - Use this exact column order:
+    STYLE RULES:
+    - If style is Basic, write a short straightforward homework problem.
+    - If style is Creative, write a richer scenario, but do not change the math.
+
+    DISPLAY FORMAT:
+    - Include a labeled Vector column first.
+    - Use this exact order:
     Vector | Magnitude | Direction (deg) | X-Component | Y-Component | X-Location | Y-Location
-    - Align columns using fixed-width spacing.
-    - Preserve original decimal formatting.
+    - Align columns using fixed-width spacing if possible.
+    - Preserve decimal formatting.
 
-    OUTPUT FORMAT (strict):
-    1) Title (one line)
-    2) Scenario + questions
-    3) A neatly formatted matrix following Display Matrix section
-    4) A final section titled exactly: "Solution Key"
-    5) Under "Solution Key", output ONLY lines in this exact form:
+    OUTPUT FORMAT:
+    1) Title
+    2) Scenario and question(s)
+    3) Formatted matrix
+    4) A final section titled exactly: Solution Key
+    5) Under Solution Key, output only lines in the form:
     variable = number
 
-    for 2D coordinate system and vector problems there is no resulting vector, just solving for variables in vectors. 
-    Do NOT include any other solution steps. Do NOT calculate any answers. Use the original hidden numbers from the matrix.
-    """
+    Do not include any other solution steps.
+"""
 
     resp = client.responses.create(
         model="gpt-5-mini",

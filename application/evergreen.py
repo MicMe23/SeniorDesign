@@ -19,6 +19,8 @@ from reportlab.lib.pagesizes import letter
 
 # project modules
 from application.problem_gen import vectors
+from application import evergreen_utils
+
 test = vectors.Vector(1,1,1,1)
 print(test.get_magnitude())
 from application.problem_gen import vector_matrix
@@ -220,11 +222,11 @@ if generate_prompt_clicked:
         if st.session_state.matrix_df is None:
             st.warning("Please generate a matrix first.")
         else:
-            matrix_payload = st.session_state.matrix_df.to_dict(orient="records")
+            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic)
 
             log_entry = {
                 "domain": domain,
-                "chapter": unit,
+                "unit": unit,
                 "chapter_name": unit_dict.get(unit),
                 "subtopic": subtopic,
                 "subtopic_name": subtopic_dict.get(subtopic, "").strip(" -"),

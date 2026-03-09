@@ -1,40 +1,52 @@
 {
     "domain": "Aerospace Engineering",
-    "chapter": 2,
+    "unit": 2,
     "chapter_name": "Chapter 2 - Forces and Other Vectors",
-    "subtopic": "2.3",
-    "subtopic_name": "2D Coordinate System & Vectors",
+    "subtopic": "2.6",
+    "subtopic_name": "Vector Addition",
     "custom_context": "",
     "level_of_detail": "Basic",
     "picture_seeding": false,
     "unit_seeding": true,
     "matrix_name": "generated_3_vectors",
-    "matrix_payload": [
-        {
-            "magnitude": 9.434,
-            "x_component": 5.0,
-            "y_component": -8.0,
-            "direction": 327.995,
-            "x_location": 5.0,
-            "y_location": 4.0
-        },
-        {
-            "magnitude": 3.606,
-            "x_component": 2.0,
-            "y_component": -3.0,
-            "direction": 326.31,
-            "x_location": 6.0,
-            "y_location": 0.0
-        },
-        {
-            "magnitude": 19.313,
-            "x_component": -7.0,
-            "y_component": -18.0,
-            "direction": 248.749,
-            "x_location": 10.0,
-            "y_location": 10.0
+    "matrix_payload": {
+        "vectors": [
+            {
+                "magnitude": 13.416,
+                "x_component": -12.0,
+                "y_component": 6.0,
+                "direction": 153.435,
+                "x_location": 0.0,
+                "y_location": 0.0
+            },
+            {
+                "magnitude": 10.05,
+                "x_component": 1.0,
+                "y_component": -10.0,
+                "direction": 354.289,
+                "x_location": 0.0,
+                "y_location": 0.0
+            },
+            {
+                "magnitude": 9.0,
+                "x_component": 0.0,
+                "y_component": 9.0,
+                "direction": 90.0,
+                "x_location": 0.0,
+                "y_location": 0.0
+            }
+        ],
+        "computed": {
+            "resultant": {
+                "magnitude": 12.083,
+                "direction": 155.556,
+                "x_component": -11.0,
+                "y_component": 5.0,
+                "x_location": 0,
+                "y_location": 0
+            }
         }
-    ],
+    },
     "unit_selection": "Meters per second",
     "asset": null
 }
