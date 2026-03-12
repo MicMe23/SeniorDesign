@@ -70,13 +70,11 @@ context = {
     "Creative": "long/creative context"
 }
 
-asset_choices =[
-    # can we get rid of Generic? 
-    #"Generic": [],
-    "No Image",
-    "Plane (seen from the side)]",
-    "Person (seen from above)]"
-]
+asset_choices = {
+    "Generic": ["No Image", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
+    "Aerospace Engineering": ["No Image", "Plane (seen from the side)"],
+    "Biomedical Engineering": ["No Image", "Person (seen from above)"]
+}
 
 # --- Unit selector ---
 # Connect a vector type to all possible measurements
@@ -153,7 +151,7 @@ with col1:
     domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
 with col2:
-    image_info = st.selectbox("Image", options=asset_choices, index=0)
+    image_info = st.selectbox("Image", options=asset_choices[domain], index=0)
 
 with col1:
     unit_type = st.selectbox("Unit Type", options=list(unit_types.keys()), index=0)

@@ -64,10 +64,44 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
     - The story must match Subtopic {topic} strictly.
     - Provide 1 to 2 clear student tasks.
     - Keep the scenario consistent with {domain}.
-    - If there is an image, make sure the questions texts match {image_info}
     - User context: {injection}
     - Style: {context}
 
+    IMAGE GROUNDING RULES (MANDATORY)
+
+    The scenario must visually match the selected image asset, but the text should NEVER mention that an image exists.
+
+    Selected asset: {image_info}
+
+    MODE 1 — No Image Selected
+    If the selected asset is "No Image":
+    - You may create any appropriate engineering scenario.
+    - Be creative and choose a realistic physical situation related to the selected domain and topic.
+    - Do NOT write phrases like "No image is provided" or "imagine an image".
+    - Simply write the scenario naturally.
+
+    MODE 2 — Specific Image Selected
+    If a specific image asset is selected:
+
+    1. The scenario must be about the subject shown in the image.
+    2. The first sentence must clearly describe that subject.
+    3. Do NOT substitute related objects.
+    4. Do NOT generalize to the broader field.
+    5. Do NOT place the scenario inside systems not visible in the image.
+    6. Each vector must correspond to one separate visible object matching the subject.
+
+    Examples:
+    Plane image → multiple aircraft moving or experiencing forces  
+    Person image → multiple people walking, pushing, lifting, or moving
+
+    Forbidden substitutions:
+    Plane image → UAVs, drones, missiles, satellites  
+    Person image → blood vessels, organs, cells, internal anatomy
+
+    CRITICAL RULE:
+    The scenario text must NEVER say that an image exists or refer to the image directly.
+    The image is only a constraint for the story, not part of the story.
+    
     STYLE RULES:
     - If style is Basic, write a short straightforward homework problem.
     - If style is Creative, write a richer scenario, but do not change the math.
