@@ -141,7 +141,6 @@ st.divider()
 ################ Section 1: Problem settings #################
 st.header("Problem Settings")
 
-# ---------- Row 1 ----------
 col1, col2 = st.columns([1,1])
 
 with col1:
