@@ -41,7 +41,8 @@ def build_llm_payload(df, subtopic):
     }
 
     # vector addition section
-    if subtopic == "2.6":
+    if subtopic == "Vector Addition":
+        print("made it here made it here")
         resultant = calculate_problem_solution.calculate_sum_of_vectors(vector_array)
         payload["computed"]["resultant"] = {
             "magnitude": round(resultant.get_magnitude(), 3),
@@ -53,7 +54,7 @@ def build_llm_payload(df, subtopic):
         }
 
     # Dot product
-    elif subtopic == "2.7":
+    elif subtopic == "Dot Product":
         if len(vector_array) < 2:
             raise ValueError("Dot product problems require at least 2 vectors.")
 

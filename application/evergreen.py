@@ -46,37 +46,22 @@ st.title("Evergreen Classrooms")
 
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
-subtopic_dict = {
-    "2.1": " - Vectors",
-    "2.2": " - One-Dimensional Vectors",
-    "2.3": " - 2D Coordinate System & Vectors",
-    "2.4": " - 3D Coordinate System & Vectors",
-    "2.5": " - Unit Vectors",
-    "2.6": " - Vector Addition",
-    "2.7": " - Dot Products",
-    "2.8": " - Cross Products",
+subtopic_list = [
+    "2D Coordinate System & Vectors",
+    "3D Coordinate System & Vectors",
+    "Unit Vectors",
+    "Vector Addition",
+    "Dot Product",
+    "Cross Products",
 
-    "4.1": " - Moment of Force",
-    "4.2": " - Scalar Addition of Moments",
-    "4.3": " - Varignon's Theorem",
-    "4.4": " - 3D Moments",
-    "4.5": " - Couples",
-    "4.6": " - Equivalent Transformations",
-    "4.7": " - Statically Equivalent Systems"
-}
-
-# Connect a chapter with all of its subchapters
-subtopics_by_unit = {
-    2: ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8"],
-    4: ["4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7"]
-}
-
-# --- Section selector ---
-# Connect a chapter number with its title
-unit_dict = {
-    2: "Chapter 2 - Forces and Other Vectors",
-    4: "Chapter 4 - Moments and Static Equivalence"
-}
+    "4. Moment of Force",
+    "4. Scalar Addition of Moments",
+    "4. Varignon's Theorem",
+    "4. 3D Moments",
+    "4. Couples",
+    "4. Equivalent Transformations",
+    "4. Statically Equivalent Systems"
+]
 
 # --- Context selector ---
 # Connect a selectbox choice to its description
@@ -85,11 +70,13 @@ context = {
     "Creative": "long/creative context"
 }
 
-asset_choices = {
-    "Generic": [],
-    "Aerospace Engineering": ["Plane (seen from the side)"],
-    "Biomedical Engineering": ["Person (seen from above)"]
-}
+asset_choices =[
+    # can we get rid of Generic? 
+    #"Generic": [],
+    "No Image",
+    "Plane (seen from the side)]",
+    "Person (seen from above)]"
+]
 
 # --- Unit selector ---
 # Connect a vector type to all possible measurements
@@ -122,45 +109,6 @@ if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
 
 st.divider()
-################ Section 1: Problem settings #################
-st.header("Problem Settings")
-
-# Displays the Chapter selectbox
-unit = st.selectbox("Chapter", options=list(unit_dict.keys()), index=0, format_func=lambda x: unit_dict[x])
-subtopic_options = subtopics_by_unit[unit]
-
-# Displays the Topic selectbox
-subtopic = st.selectbox("Topic", options=subtopic_options, index=0, format_func=lambda x: f"{x}{subtopic_dict.get(x, '')}")
-
-# Displays the Context prompt
-injection = st.text_input(label = "Custom context (do not add too much)")
-context = st.selectbox("Level of Detail",
-                        options = context)
-
-# Displays the Major selectbox
-domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
-
-if st.session_state.pic_seeded:
-    assets = asset_choices.get(domain)
-    if assets:
-        # Select asset to be used
-        asset = st.selectbox("Asset", options=assets, index = 0)
-
-if st.session_state.unit_seeded:
-    # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
-    # --- We might need more than one selectable unit in the future, and assets should affect this someday
-    vector_unit = (unit)
-
-    # Picks what choices for units are shown to the user based on other variables
-    unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
-
-    # Displays the Units selectbox
-    unit_selection = st.selectbox("Units", options=unit_choices, index=0)
-
-# Displays the Generate Problem button
-generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
-
-st.divider()
 st.header("Matrix Gen")
 # Displays the Generate Matrix button
 # number of vectors for generated matrix
@@ -176,22 +124,6 @@ unit_seeded = st.checkbox("Unit seeding", key = "unit_seeded")
 # We will replace this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
 #matrix_name, matrix_path, MATRIX = load_random_matrix()
 
-# ---------------- Matrix generation ----------------
-if generate_matrix_clicked:
-    # Create a new matrix
-    pm = problem_metadata.ProblemMetadata(
-        problem_type=subtopic,
-        number_of_vectors=int(num_vectors),
-        units=unit_selection,
-    )
-    pm.set_vector_array_randomly()
-
-    # Convert to DataFrame for the editor and LLM
-    st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
-
-    # debug line
-    st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
-
 # ---------------- csv editor ----------------
 if st.session_state.matrix_df is not None:
     with st.container(border=True, width = 750):
@@ -204,17 +136,71 @@ if st.session_state.matrix_df is not None:
         st.session_state.matrix_df = edited_df
 else:
     st.info("Please generate a matrix to start editing.")
-    
-    # --- The data_editor already has an option to download as csv, I'm not sure this is necessary
-    #csv_bytes = edited_df.to_csv(index=False).encode("utf-8")
+st.divider()
 
-    # st.download_button(
-    #     label="Download CSV",
-    #     data=csv_bytes,
-    #     file_name=matrix_name,
-    #     mime="text/csv",
-    #     use_container_width=True,
-    # )
+################ Section 1: Problem settings #################
+st.header("Problem Settings")
+
+# ---------- Row 1 ----------
+col1, col2 = st.columns([1,1])
+
+with col1:
+    subtopic = st.selectbox("Topic", options=subtopic_list, index=0)
+
+with col2:
+    context = st.selectbox("Level of Detail", options=context)
+
+with col1:
+    domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
+
+with col2:
+    image_info = st.selectbox("Image", options=asset_choices, index=0)
+
+with col1:
+    unit_type = st.selectbox("Unit Type", options=list(unit_types.keys()), index=0)
+
+with col2:
+    velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
+
+injection = st.text_input("Custom context (do not add too much)")
+
+if st.session_state.pic_seeded:
+    assets = asset_choices
+    if assets:
+        # Select asset to be used
+        asset = st.selectbox("Asset", options=assets, index = 0)
+
+#if st.session_state.unit_seeded:
+    # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
+    # --- We might need more than one selectable unit in the future, and assets should affect this someday
+    #vector_unit = (unit)
+
+    #Picks what choices for units are shown to the user based on other variables
+    #unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
+
+    # Display the Imgae selectbox
+    #image_info = st.selectbox("Image", options = asset_choices, index=0)
+
+# Displays the Generate Problem button
+generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
+
+st.divider()
+
+# ---------------- Matrix generation ----------------
+if generate_matrix_clicked:
+    # Create a new matrix
+    pm = problem_metadata.ProblemMetadata(
+        problem_type = subtopic,
+        number_of_vectors=int(num_vectors),
+        units = velocity_unit,
+    )
+    pm.set_vector_array_randomly()
+
+    # Convert to DataFrame for the editor and LLM
+    st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
+
+    # debug line
+    st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
 
 # ---------- Generate Button Logic ----------
 if generate_prompt_clicked:
@@ -222,26 +208,22 @@ if generate_prompt_clicked:
         if st.session_state.matrix_df is None:
             st.warning("Please generate a matrix first.")
         else:
+
+            #building the payload to be injested by the LLM
             matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic)
 
             log_entry = {
-                "domain": domain,
-                "unit": unit,
-                "chapter_name": unit_dict.get(unit),
-                "subtopic": subtopic,
-                "subtopic_name": subtopic_dict.get(subtopic, "").strip(" -"),
-                "custom_context": injection,
-                "level_of_detail": context,
-                "picture_seeding": st.session_state.pic_seeded,
-                "unit_seeding": st.session_state.unit_seeded,
-                "matrix_name": st.session_state.matrix_name,
-                "matrix_payload": matrix_payload,
+            "domain": domain,
+            "subtopic": subtopic,
+            "custom_context": injection,
+            "level_of_detail": context,
+            "picture_seeding": st.session_state.pic_seeded,
+            "unit_seeding": st.session_state.unit_seeded,
+            "unit_type": unit_type,
+            "velocity_unit": velocity_unit,
+            "matrix_name": st.session_state.matrix_name,
+            "matrix_payload": matrix_payload,
             }
-
-            if st.session_state.unit_seeded:
-                log_entry["unit_selection"] = unit_selection
-            else:
-                log_entry["unit_selection"] = None
 
             if st.session_state.pic_seeded and "asset" in locals():
                 log_entry["asset"] = asset
@@ -253,22 +235,21 @@ if generate_prompt_clicked:
             with st.spinner("Generating…"):
                 st.session_state.problem = generate_problem(
                     domain,
-                    unit,
                     subtopic,
+                    image_info,
                     injection,
                     context,
-                    unit_selection,
+                    velocity_unit,
                     st.session_state.matrix_name,
                     matrix_payload
                 )
 
                 st.session_state.last_meta = log_entry
-# ---------- Main output ----------
-st.divider()
 
+# ---------- Main output ----------
 meta = st.session_state.last_meta
 if meta:
-    st.caption(f"**Selected:** {unit_dict[meta['unit']]} • {meta['subtopic']} — {subtopic_dict.get(meta['subtopic'], '')} • {meta['domain']}")
+    st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
 
 if st.session_state.problem:
     with st.container(border=True, width = 750):
@@ -279,8 +260,8 @@ if st.session_state.problem:
         with col1:
             if st.button("Regenerate", use_container_width=True):
                 with st.spinner("Regenerating…"):
-                    st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
-                    st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
+                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, state.matrix_name, matrix_payload)
+                    st.session_state.last_meta = {"domain": domain,  "subtopic": subtopic}
     # with st.container(border=False):
     #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
     #         html_code = f.read()

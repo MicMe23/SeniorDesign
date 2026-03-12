@@ -7,10 +7,10 @@ try:
 except:
     raise OpenAIError("No API key provided.")
 
-def generate_problem(domain, unit, subtopic, injection, context, velocity_units, matrix_name, MATRIX):
+def generate_problem(domain, topic, image_info, injection, context, velocity_units, matrix_name, MATRIX):
 
     SYSTEM = f"""
-    You are generating a {domain}-themed engineering homework problem for Unit {unit}, Subtopic {subtopic}.
+    You are generating a {domain}-themed engineering homework problem for topic {topic}.
 
     DATA FORMAT:
     - The CSV matrix below has ONE HEADER ROW.
@@ -61,10 +61,10 @@ def generate_problem(domain, unit, subtopic, injection, context, velocity_units,
     - If the user message says Problem mode: dot_product, follow only the dot_product rules.
 
     STORY AND TASK REQUIREMENTS:
-    - The story must match Subtopic {subtopic} strictly.
-    - Use only concepts appropriate for Unit {unit}.
+    - The story must match Subtopic {topic} strictly.
     - Provide 1 to 2 clear student tasks.
     - Keep the scenario consistent with {domain}.
+    - If there is an image, make sure the questions texts match {image_info}
     - User context: {injection}
     - Style: {context}
 
@@ -72,12 +72,29 @@ def generate_problem(domain, unit, subtopic, injection, context, velocity_units,
     - If style is Basic, write a short straightforward homework problem.
     - If style is Creative, write a richer scenario, but do not change the math.
 
-    DISPLAY FORMAT:
-    - Include a labeled Vector column first.
-    - Use this exact order:
-    Vector | Magnitude | Direction (deg) | X-Component | Y-Component | X-Location | Y-Location
-    - Align columns using fixed-width spacing if possible.
-    - Preserve decimal formatting.
+    FORMAT REQUIREMENTS:
+
+    Return the problem formatted in clean Markdown using the following structure:
+
+    ## Title
+
+    ### Scenario
+
+    ### Tasks
+    1. Task description
+    2. Task description
+
+    ### Data Table
+    Use a proper Markdown table with headers:
+    | Vector | Magnitude | Direction (deg) | X-Component | Y-Component | X-Location | Y-Location |
+    |--------|-----------|-----------------|-------------|-------------|------------|------------|
+    | ...    | ...       | ...             | ...         | ...         | ...        | ...        |
+
+    ### Solution Key
+    for solutions, make a new line every for every variable like this,
+    V1_magnitude = 10.77 new line
+    V2_x_component = 2.0 new line
+    V3_direction_deg = 315.0 new line
 
     OUTPUT FORMAT:
     1) Title
@@ -94,7 +111,7 @@ def generate_problem(domain, unit, subtopic, injection, context, velocity_units,
         model="gpt-5-mini",
         input=[
             {"role": "system", "content": SYSTEM},
-        {"role": "user", "content": f"Domain: {domain}\nUnit: {unit}\nSubtopic: {subtopic}\nMatrix:\n{MATRIX}"}
+        {"role": "user", "content": f"Domain: {domain}\nMatrix:\n{MATRIX}"}
         ],
     )
 
