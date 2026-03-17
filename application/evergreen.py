@@ -71,9 +71,9 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
-    "Aerospace Engineering": ["No Image", "Plane (seen from the side)"],
-    "Biomedical Engineering": ["No Image", "Person (seen from above)"]
+    "Generic": ["No Image", "Just the arrow" "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
+    "Aerospace Engineering": ["No Image","Just the arrow", "Plane (seen from the side)"],
+    "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
 
 # --- Unit selector ---
@@ -103,32 +103,6 @@ if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
 
 st.divider()
-st.header("Matrix Gen")
-# Displays the Generate Matrix button
-# number of vectors for generated matrix
-num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
-generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
-
-
-############################## Main Screen ##############################
-
-# We will replace this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
-#matrix_name, matrix_path, MATRIX = load_random_matrix()
-
-# ---------------- csv editor ----------------
-if st.session_state.matrix_df is not None:
-    with st.container(border=True, width = 750):
-        st.subheader("Edit your data below:")
-        edited_df = st.data_editor(
-            st.session_state.matrix_df,
-            num_rows="dynamic",
-            key="matrix_editor",
-        )
-        st.session_state.matrix_df = edited_df
-else:
-    st.info("Please generate a matrix to start editing.")
-st.divider()
-
 ################ Section 1: Problem settings #################
 st.header("Problem Settings")
 
@@ -153,6 +127,30 @@ with col2:
     velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
 
 injection = st.text_input("Custom context (do not add too much)")
+st.divider()
+
+st.header("Matrix Gen")
+# Displays the Generate Matrix button
+# number of vectors for generated matrix
+num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
+
+# We will replace this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
+#matrix_name, matrix_path, MATRIX = load_random_matrix()
+
+# ---------------- csv editor ----------------
+if st.session_state.matrix_df is not None:
+    with st.container(border=True, width = 750):
+        st.subheader("Edit your data below:")
+        edited_df = st.data_editor(
+            st.session_state.matrix_df,
+            num_rows="dynamic",
+            key="matrix_editor",
+        )
+        st.session_state.matrix_df = edited_df
+else:
+    st.info("Please generate a matrix to start editing.")
+st.divider()
 
 # Displays the Generate Problem button
 generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
