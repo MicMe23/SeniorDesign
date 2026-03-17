@@ -97,10 +97,6 @@ if "problem" not in st.session_state:
     st.session_state.problem = ""
 if "last_meta" not in st.session_state:
     st.session_state.last_meta = None
-if "pic_seeded" not in st.session_state:
-    st.session_state.pic_seeded = True
-if "unit_seeded" not in st.session_state:
-    st.session_state.unit_seeded = True
 if "matrix_df" not in st.session_state:
     st.session_state.matrix_df = None
 if "matrix_name" not in st.session_state:
@@ -112,9 +108,6 @@ st.header("Matrix Gen")
 # number of vectors for generated matrix
 num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
 generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
-
-pic_seeded = st.checkbox("Picture seeding", key = "pic_seeded")
-unit_seeded = st.checkbox("Unit seeding", key = "unit_seeded")
 
 
 ############################## Main Screen ##############################
@@ -161,23 +154,6 @@ with col2:
 
 injection = st.text_input("Custom context (do not add too much)")
 
-if st.session_state.pic_seeded:
-    assets = asset_choices
-    if assets:
-        # Select asset to be used
-        asset = st.selectbox("Asset", options=assets, index = 0)
-
-#if st.session_state.unit_seeded:
-    # vector_unit will be a tuple which can consider any selection needed to determine what units should be used
-    # --- We might need more than one selectable unit in the future, and assets should affect this someday
-    #vector_unit = (unit)
-
-    #Picks what choices for units are shown to the user based on other variables
-    #unit_choices = [u for types in unit_selector.get(vector_unit) for u in unit_types.get(types)]
-
-    # Display the Imgae selectbox
-    #image_info = st.selectbox("Image", options = asset_choices, index=0)
-
 # Displays the Generate Problem button
 generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
 
@@ -214,18 +190,11 @@ if generate_prompt_clicked:
             "subtopic": subtopic,
             "custom_context": injection,
             "level_of_detail": context,
-            "picture_seeding": st.session_state.pic_seeded,
-            "unit_seeding": st.session_state.unit_seeded,
             "unit_type": unit_type,
             "velocity_unit": velocity_unit,
             "matrix_name": st.session_state.matrix_name,
             "matrix_payload": matrix_payload,
             }
-
-            if st.session_state.pic_seeded and "asset" in locals():
-                log_entry["asset"] = asset
-            else:
-                log_entry["asset"] = None
 
             save_problem_log(log_entry)
 
@@ -266,4 +235,4 @@ if st.session_state.problem:
     #     component.html(html_code)
 
 else:
-    st.info("Choose settings in the sidebar, then click **Generate problem**.")
+    st.info("Choose settings then click **Generate problem**.")
