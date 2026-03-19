@@ -226,13 +226,7 @@ if st.session_state.problem:
                 with st.spinner("Regenerating…"):
                     st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, state.matrix_name, matrix_payload)
                     st.session_state.last_meta = {"domain": domain,  "subtopic": subtopic}
-    # with st.container(border=False):
-    #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
-    #         html_code = f.read()
-
-    #     component.html(html_code)
-                    st.session_state.problem = generate_problem(domain, unit, subtopic, injection, context, unit_selection, matrix_name, MATRIX)
-                    st.session_state.last_meta = {"domain": domain, "unit": unit, "subtopic": subtopic}
+                    
     with st.container(border=False):
         # Read in unedited html and js files
         with open("application\diagram_gen\index.html", "r") as html:
