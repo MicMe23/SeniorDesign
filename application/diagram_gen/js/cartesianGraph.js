@@ -176,7 +176,7 @@ class CartesianGraph {
     vis.vectorGroups.selectAll('image')
       .data((d, i) => [{ d: d, i: i }])
       .join('image')
-      .attr('href', '../../assets/aerospace/f16_clipart_cropped.png') // , '../../assets/bme/man_running.png', '../../assets/mechanical/red_f1_car.png'
+      .attr('href', img) //'../../assets/aerospace/f16_clipart_cropped.png' , '../../assets/bme/man_running.png', '../../assets/mechanical/red_f1_car.png'
       .attr('width', subjectObjectWidth)
       .attr('height', subjectObjectHeight)
       .attr('x', p => vis.xScale(p.d.x_location) - subjectObjectWidth / 2) // - subjectObjectWidth

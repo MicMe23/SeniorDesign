@@ -6,3 +6,6 @@ backgroundColor="#0E1117"           # dark background
 secondaryBackgroundColor="#161B22"  # card/sidebar background
 textColor="#FAFAFA"
 font="sans serif"
+
+[server]
+enableStaticServing = true

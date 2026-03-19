@@ -18,8 +18,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
 # project modules
-from application.problem_gen import vectors
-from application import evergreen_utils
+from problem_gen import vectors
+import evergreen_utils
 
 test = vectors.Vector(1,1,1,1)
 print(test.get_magnitude())
@@ -71,7 +71,7 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Just the arrow" "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
+    "Generic": ["No Image", "Just the arrow", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
     "Aerospace Engineering": ["No Image","Just the arrow", "Plane (seen from the side)"],
     "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
@@ -90,6 +90,13 @@ unit_types = {
 unit_selector = {
     (2): ["Velocity", "Acceleration", "Force"],
     (4): ["Velocity", "Acceleration", "Force", "Torque"]
+}
+
+# Asset to img
+img_selector = {
+    "Plane (seen from the side)": "/static/aerospace/f16_clipart_cropped.png",
+    "Person (seen from above)": "/static/bme/man_running.png",
+    "Car (seen from above)": "/static/mechanical/red_f1_car.png"
 }
 
 # init session states
@@ -227,31 +234,31 @@ if st.session_state.problem:
                     st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, state.matrix_name, matrix_payload)
                     st.session_state.last_meta = {"domain": domain,  "subtopic": subtopic}
                     
-    with st.container(border=False):
-        # Read in unedited html and js files
-        with open("application\diagram_gen\index.html", "r") as html:
-            html_code = html.read()
-            html.close()
-        with open("application\diagram_gen\js\main.js", "r") as main:
-            html_main = main.read()
-            main.close()
-        with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
-            html_graph = graph.read()
-            graph.close()
+    #with st.container(border=False):
+    # Read in unedited html and js files
+    with open("application\diagram_gen\index.html", "r") as html:
+        html_code = html.read()
+        html.close()
+    with open("application\diagram_gen\js\main.js", "r") as main:
+        html_main = main.read()
+        main.close()
+    with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
+        html_graph = graph.read()
+        graph.close()
 
-        # Read in the csv to inject it into the html when it runs
-        df = pd.read_csv("application/diagram_gen/data/vector_matrix.csv")
-        csvInj = df.to_csv(index=False)
-            
-        # Make all scripts inline and inject the csv
-        html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
-        html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`;</script><script>{html_main}</script>')
+    # Read in the csv to inject it into the html when it runs
+    df = pd.read_csv("application/diagram_gen/data/vector_matrix.csv")
+    csvInj = df.to_csv(index=False)
+        
+    # Make all scripts inline and inject the csv
+    html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
+    html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {img_selector.get(image_info, "null")};</script><script>{html_main}</script>')
 
-        # Debug. Shows what the component.html is receiving
-        #st.code(html_code[:2000])
+    # Debug. Shows what the component.html is receiving
+    st.code(html_code[:-2000])
 
-        # Run the flattened code and display in streamlit
-        component.html(html_code, height=1000, width=1000, scrolling=True)
+    # Run the flattened code and display in streamlit
+    component.html(html_code, height=1000, width=1000, scrolling=True)
 
 else:
     st.info("Choose settings then click **Generate problem**.")
