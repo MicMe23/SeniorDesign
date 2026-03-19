@@ -184,9 +184,22 @@ class CartesianGraph {
       .attr('transform', p => {
         const x = vis.xScale(p.d.x_location);
         const y = vis.yScale(p.d.y_location);
-        return `
-          rotate(${-p.d.direction + 180}, ${x}, ${y})
-        `; // rotate(${-p.d.direction}, ${x}, ${y})
+
+        const angle = -p.d.direction + 180;
+
+        console.log(p.d.direction, angle);
+
+        if ((angle >= 0 && angle <= 90) || (angle >= 270 && angle <= 360)) {
+          return `
+          rotate(${angle}, ${x}, ${y})
+          translate(${x}, ${y})
+          scale(1, -1)
+          translate(${-x}, ${-y})
+          `
+        }
+        else {
+          return `rotate(${angle}, ${x}, ${y})`; // rotate(${-p.d.direction}, ${x}, ${y})
+        }
       });
 
   }
