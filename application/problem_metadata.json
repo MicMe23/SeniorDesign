@@ -1,7 +1,7 @@
 {
     "domain": "Aerospace Engineering",
     "subtopic": "2D Coordinate System & Vectors",
-    "custom_context": "make the question based around the f16",
+    "custom_context": "problem should be about F16s in tight formation",
     "level_of_detail": "Creative",
     "unit_type": "Velocity",
     "velocity_unit": "Meters per second",
@@ -9,28 +9,28 @@
     "matrix_payload": {
         "vectors": [
             {
-                "magnitude": 1.0,
-                "x_component": 0.0,
-                "y_component": -1.0,
-                "direction": 270.0,
-                "x_location": -6.0,
+                "magnitude": 5.831,
+                "x_component": 3.0,
+                "y_component": 5.0,
+                "direction": 59.036,
+                "x_location": 2.0,
                 "y_location": 3.0
             },
             {
-                "magnitude": 8.062,
-                "x_component": -7.0,
-                "y_component": 4.0,
-                "direction": 150.255,
-                "x_location": 2.0,
-                "y_location": 5.0
+                "magnitude": 7.81,
+                "x_component": -5.0,
+                "y_component": -6.0,
+                "direction": 230.194,
+                "x_location": -3.0,
+                "y_location": 7.0
             },
             {
-                "magnitude": 3.0,
-                "x_component": 0.0,
+                "magnitude": 7.616,
+                "x_component": 7.0,
                 "y_component": 3.0,
-                "direction": 90.0,
-                "x_location": -10.0,
-                "y_location": 6.0
+                "direction": 23.199,
+                "x_location": -4.0,
+                "y_location": -5.0
             }
         ],
         "computed": {}

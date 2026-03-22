@@ -40,9 +40,9 @@ def save_problem_log(entry, filename="problem_metadata.json"):
         json.dump(entry, f, indent=4)
 
 
-st.set_page_config(page_title="Evergreen Classrooms", page_icon="🌲", layout="centered")
+st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="centered")
 
-st.title("Evergreen Classrooms")
+st.title("Evergreen Classroom")
 
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
@@ -71,8 +71,8 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Just the arrow" "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
-    "Aerospace Engineering": ["No Image","Just the arrow", "Plane (seen from the side)"],
+    "Generic": ["No Image", "Just the arrow" "F16 (seen from the side)", "Person (seen from above)", "F1 Car (seen from above)"],
+    "Aerospace Engineering": ["No Image","Just the arrow", "F16 (seen from the side)"],
     "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
 
@@ -126,7 +126,8 @@ with col1:
 with col2:
     velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
 
-injection = st.text_input("Custom context (do not add too much)")
+injection = st.text_input("Custom context (1 - 2 scentences)")
+tasks = st.text_area("Task list: number tasks if you have specific tasks in mind", value=None, height=300 )
 st.divider()
 
 st.header("Matrix Gen")
@@ -192,6 +193,7 @@ if generate_prompt_clicked:
             "velocity_unit": velocity_unit,
             "matrix_name": st.session_state.matrix_name,
             "matrix_payload": matrix_payload,
+            "tasks": tasks
             }
 
             save_problem_log(log_entry)
@@ -205,12 +207,12 @@ if generate_prompt_clicked:
                     context,
                     velocity_unit,
                     st.session_state.matrix_name,
-                    matrix_payload
+                    matrix_payload,
+                    tasks
                 )
 
                 st.session_state.last_meta = log_entry
 
-# ---------- Main output ----------
 meta = st.session_state.last_meta
 if meta:
     st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
@@ -224,8 +226,18 @@ if st.session_state.problem:
         with col1:
             if st.button("Regenerate", use_container_width=True):
                 with st.spinner("Regenerating…"):
-                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, state.matrix_name, matrix_payload)
-                    st.session_state.last_meta = {"domain": domain,  "subtopic": subtopic}
+                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, matrix_payload, tasks)
+                    st.session_state.last_meta = {
+            "domain": domain,
+            "subtopic": subtopic,
+            "custom_context": injection,
+            "level_of_detail": context,
+            "unit_type": unit_type,
+            "velocity_unit": velocity_unit,
+            "matrix_name": st.session_state.matrix_name,
+            "matrix_payload": matrix_payload,
+            "tasks": tasks
+            }
     # with st.container(border=False):
     #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
     #         html_code = f.read()
