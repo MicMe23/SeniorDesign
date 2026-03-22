@@ -32,9 +32,6 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
 
     1) independent_vectors
     - Use this mode for subtopics where students solve for missing attributes of individual vectors.
-    - Hide exactly ONE value in each GIVEN vector row.
-    - The hidden value must be one of:
-    magnitude, x_component, y_component, direction_deg
     - Do NOT hide x_location or y_location.
     - Do NOT hide more than one value per vector row.
 
@@ -108,10 +105,10 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
 
     TASKS SECTION:
     Tasks are {tasks}:
-    - If tasks are None or Empty, choose 1 - 2 tasks for the student as normal
+    - If tasks are None or Empty, choose 1 - 2 tasks for the student as normal.
     - If tasks present, print the  out word for word in the Tasks section of the output.
-    - If a task says to hide a specific variable, hide that variable in the matrix.
-    - If the task says to hide a whole vector, then hide the whole row of information for that vector
+    - If a task says to solve a specific feature of a vector then hide that vector's feature in the matrix.
+    - If the task says to solve for a whole vector, then hide the whole row of information for that vector.
     - Never try to solve a task for the user.
 
 
