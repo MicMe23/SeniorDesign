@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 
 MAGNITUDE_OF_COORD_RANGE = 10
-VECTOR_HEADERS = ["magnitude", "x_component", "y_component", "direction", "x_location", "y_location"]
+VECTOR_HEADERS = ["magnitude", "x_component", "y_component", "z_component", "direction", "x_location", "y_location", "z_location"]
+DEFAULT_Z_VALUES_IN_2D = 0
 
 #convert a vector to a dataframe for the csv display and to be in payload for llm
 def vectors_to_df(vector_array) -> pd.DataFrame:
@@ -14,9 +15,11 @@ def vectors_to_df(vector_array) -> pd.DataFrame:
             "magnitude": round(v.get_magnitude(), 3),
             "x_component": float(v.x_component),
             "y_component": float(v.y_component),
+            "z_component": float(v.z_component),
             "direction": round(v.get_direction(), 3),
             "x_location": float(v.x_location),
             "y_location": float(v.y_location),
+            "z_location": float(v.z_location)
         })
     return pd.DataFrame(rows, columns=VECTOR_HEADERS)
 
@@ -24,11 +27,10 @@ def vectors_to_df(vector_array) -> pd.DataFrame:
 def df_to_matrix_payload(df: pd.DataFrame):
     return df[VECTOR_HEADERS].to_dict(orient="records")
 
+def calculate_magnitude(x_component, y_component, z_component):
+    return math.sqrt(x_component**2 + y_component**2 + z_component**2)
 
-def calculate_magnitude(x_component, y_component):
-    return math.sqrt(x_component**2 + y_component**2)
-
-def calculate_direction(x_component, y_component):
+def calculate_direction_2d(x_component, y_component):
     # cases where components are 0 to avoid division by 0 error in atan function
     if x_component == 0 and y_component > 0:
         return 90
@@ -52,6 +54,16 @@ def calculate_direction(x_component, y_component):
         raise Exception(f"Error in vector direction calculation: x = {x_component}, y = {y_component}")
     return theta
 
+# calculate the direction of the vector in 3D space using spherical coordinates, with the positive x axis as 0 degrees and the positive z axis as 90 degrees
+def calculate_direction_3d(x_component, y_component, z_component):
+    # calculate the direction of the vector in 3D space using spherical coordinates, with the positive x axis as 0 degrees and the positive z axis as 90 degrees
+    r = calculate_magnitude(x_component, y_component, z_component)
+    if r == 0:
+        raise Exception("Cannot calculate direction of a zero vector.")
+    theta = calculate_direction_2d(x_component, y_component)
+    phi = math.degrees(math.atan(y_component/x_component))
+    return theta, phi
+
 def calculate_vector_components(magnitude, direction):
     x_component = magnitude * math.cos(math.radians(direction))
     y_component = magnitude * math.sin(math.radians(direction))
@@ -65,7 +77,7 @@ def calculate_minimum_x_and_y_components(x_location, y_location):
     maximum_y_component = MAGNITUDE_OF_COORD_RANGE - y_location
     return minimum_x_component, maximum_x_component, minimum_y_component, maximum_y_component
 
-def generate_random_vector():
+def generate_random_vector_2d():
     x_location = random.randint(-MAGNITUDE_OF_COORD_RANGE, MAGNITUDE_OF_COORD_RANGE)
     y_location = random.randint(-MAGNITUDE_OF_COORD_RANGE, MAGNITUDE_OF_COORD_RANGE)
         
@@ -76,28 +88,63 @@ def generate_random_vector():
         x_component = random.randint(minimum_x_component, maximum_x_component)
         y_component = random.randint(minimum_y_component, maximum_y_component)
    
-    return Vector(x_component, y_component, x_location, y_location)
+    return Vector(x_component, y_component, DEFAULT_Z_VALUES_IN_2D, x_location, y_location, DEFAULT_Z_VALUES_IN_2D)
+
+def generate_random_vector_3d():
+    random_vector = generate_random_vector_2d()
+    
+    z_location = random.randint(-MAGNITUDE_OF_COORD_RANGE, MAGNITUDE_OF_COORD_RANGE)
+    z_component = 0
+    while z_component == 0:
+        z_component = random.randint(-MAGNITUDE_OF_COORD_RANGE, MAGNITUDE_OF_COORD_RANGE)
+
+    return Vector(random_vector.x_component, random_vector.y_component, z_component, random_vector.x_location, random_vector.y_location, z_location)
+
+def vector_is_in_2_dimensions(vector):
+    return vector.z_component == DEFAULT_Z_VALUES_IN_2D and vector.z_location == DEFAULT_Z_VALUES_IN_2D
 
 class Vector:
-    # If initializing using magnitude, leave x and y component as 0, and if initializing using x and y component, leave magnitude as 0
-    def __init__(self, x_component, y_component, x_location, y_location):
+    # Initializes a vector object with x, y, and z components and x, y, and z locations
+    def __init__(self, x_component, y_component, z_component, x_location, y_location, z_location):
         self.x_component = x_component
         self.y_component = y_component
         self.x_location = x_location
         self.y_location = y_location
+        self.z_component = z_component
+        self.z_location = z_location
 
     def get_magnitude(self):
-        return calculate_magnitude(self.x_component, self.y_component)
+        if vector_is_in_2_dimensions(self):
+            return calculate_magnitude(self.x_component, self.y_component, 0)
+        else:
+            return calculate_magnitude(self.x_component, self.y_component, self.z_component)
     
     def get_direction(self):
-        return calculate_direction(self.x_component, self.y_component)
-    
+        if vector_is_in_2_dimensions(self):
+            # Returns a single value, theta, which is the angle in the xy plane from the positive x axis, with counterclockwise being positive and clockwise being negative
+            return calculate_direction_2d(self.x_component, self.y_component)
+        else:
+            # Returns two values, theta and phi in degrees formatted as (theta, phi), where theta is the angle in the xy plane from the positive x axis and phi is the angle from the positive z axis
+            return calculate_direction_3d(self.x_component, self.y_component, self.z_component)
+        
+    def get_all_data_and_headers(self):
+        return {
+            "magnitude": self.get_magnitude(),
+            "x_component": self.x_component,
+            "y_component": self.y_component,
+            "z_component": self.z_component,
+            "direction": self.get_direction(),
+            "x_location": self.x_location,
+            "y_location": self.y_location,
+            "z_location": self.z_location
+        }
 
-# # TEST TO GENERATE RANDOM VECTOR
+# TEST TO GENERATE RANDOM VECTOR IN 2D
+# --------------------------------------------------
+random_vector = generate_random_vector_2d()
+print(random_vector.get_all_data_and_headers())
+
+# # TEST TO GENERATE RANDOM VECTOR IN 3D
 # # --------------------------------------------------
-# random_vector = generate_random_vector()
-# print(f"Vector with magnitude {random_vector.get_magnitude():.3f}, direction {random_vector.get_direction():.3f}, x component {random_vector.x_component}, y component {random_vector.y_component}, x location {random_vector.x_location}, and y location {random_vector.y_location}")
-
-    
-
-    
+random_vector_3d = generate_random_vector_3d()
+print(random_vector_3d.get_all_data_and_headers())
