@@ -61,7 +61,7 @@ def calculate_direction_3d(x_component, y_component, z_component):
     if r == 0:
         raise Exception("Cannot calculate direction of a zero vector.")
     theta = calculate_direction_2d(x_component, y_component)
-    phi = math.degrees(math.atan(y_component/x_component))
+    phi = math.degrees(math.acos(z_component/r))
     return theta, phi
 
 def calculate_vector_components(magnitude, direction):
@@ -88,7 +88,7 @@ def generate_random_vector_2d():
         x_component = random.randint(minimum_x_component, maximum_x_component)
         y_component = random.randint(minimum_y_component, maximum_y_component)
    
-    return Vector(x_component, y_component, DEFAULT_Z_VALUES_IN_2D, x_location, y_location, DEFAULT_Z_VALUES_IN_2D)
+    return Vector(2, x_component, y_component, DEFAULT_Z_VALUES_IN_2D, x_location, y_location, DEFAULT_Z_VALUES_IN_2D)
 
 def generate_random_vector_3d():
     random_vector = generate_random_vector_2d()
@@ -98,20 +98,26 @@ def generate_random_vector_3d():
     while z_component == 0:
         z_component = random.randint(-MAGNITUDE_OF_COORD_RANGE, MAGNITUDE_OF_COORD_RANGE)
 
-    return Vector(random_vector.x_component, random_vector.y_component, z_component, random_vector.x_location, random_vector.y_location, z_location)
+    return Vector(3, random_vector.x_component, random_vector.y_component, z_component, random_vector.x_location, random_vector.y_location, z_location)
 
 def vector_is_in_2_dimensions(vector):
-    return vector.z_component == DEFAULT_Z_VALUES_IN_2D and vector.z_location == DEFAULT_Z_VALUES_IN_2D
+    return vector.number_of_dimensions == 2
 
 class Vector:
     # Initializes a vector object with x, y, and z components and x, y, and z locations
-    def __init__(self, x_component, y_component, z_component, x_location, y_location, z_location):
+    def __init__(self, number_of_dimensions, x_component, y_component, z_component, x_location, y_location, z_location):
+        self.number_of_dimensions = number_of_dimensions
         self.x_component = x_component
         self.y_component = y_component
         self.x_location = x_location
         self.y_location = y_location
-        self.z_component = z_component
-        self.z_location = z_location
+
+        if vector_is_in_2_dimensions(self):
+            self.z_component = DEFAULT_Z_VALUES_IN_2D
+            self.z_location = DEFAULT_Z_VALUES_IN_2D
+        else: 
+            self.z_component = z_component
+            self.z_location = z_location
 
     def get_magnitude(self):
         if vector_is_in_2_dimensions(self):
@@ -128,23 +134,34 @@ class Vector:
             return calculate_direction_3d(self.x_component, self.y_component, self.z_component)
         
     def get_all_data_and_headers(self):
-        return {
-            "magnitude": self.get_magnitude(),
-            "x_component": self.x_component,
-            "y_component": self.y_component,
-            "z_component": self.z_component,
-            "direction": self.get_direction(),
-            "x_location": self.x_location,
-            "y_location": self.y_location,
-            "z_location": self.z_location
-        }
+        if vector_is_in_2_dimensions(self):
+            return {
+                "magnitude": self.get_magnitude(),
+                "x_component": self.x_component,
+                "y_component": self.y_component,
+                "direction": self.get_direction(),
+                "x_location": self.x_location,
+                "y_location": self.y_location
+            }
+
+        else:
+            return {
+                "magnitude": self.get_magnitude(),
+                "x_component": self.x_component,
+                "y_component": self.y_component,
+                "z_component": self.z_component,
+                "direction": self.get_direction(),
+                "x_location": self.x_location,
+                "y_location": self.y_location,
+                "z_location": self.z_location
+            }
 
 # TEST TO GENERATE RANDOM VECTOR IN 2D
 # --------------------------------------------------
-random_vector = generate_random_vector_2d()
-print(random_vector.get_all_data_and_headers())
+# random_vector = generate_random_vector_2d()
+# print(random_vector.get_all_data_and_headers())
 
 # # TEST TO GENERATE RANDOM VECTOR IN 3D
 # # --------------------------------------------------
-random_vector_3d = generate_random_vector_3d()
-print(random_vector_3d.get_all_data_and_headers())
+# random_vector_3d = generate_random_vector_3d()
+# print(random_vector_3d.get_all_data_and_headers())
