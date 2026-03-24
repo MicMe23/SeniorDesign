@@ -6,7 +6,7 @@ from . import vector_matrix
 from . import problem_metadata
 
 # returns a vector object for the resultant vector of the vector addition problem
-# the method will add all of the vectors in the array to get one resultant vectord
+# the method will add all of the vectors in the array to get one resultant vector
 def calculate_sum_of_vectors(vector_array):
     # add the x, y, z components of each vector in the vector array to get the x, y, z components of the resultant vector, then calculate the magnitude and direction of the resultant vector
     resultant_x_component = 0
