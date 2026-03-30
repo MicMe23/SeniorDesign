@@ -7,7 +7,7 @@ try:
 except:
     raise OpenAIError("No API key provided.")
 
-def generate_problem(domain, topic, image_info, injection, context, velocity_units, matrix_name, MATRIX):
+def generate_problem(domain, topic, image_info, injection, context, velocity_units, matrix_name, MATRIX, tasks):
 
     SYSTEM = f"""
     You are generating a {domain}-themed engineering homework problem for topic {topic}.
@@ -32,9 +32,6 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
 
     1) independent_vectors
     - Use this mode for subtopics where students solve for missing attributes of individual vectors.
-    - Hide exactly ONE value in each GIVEN vector row.
-    - The hidden value must be one of:
-    magnitude, x_component, y_component, direction_deg
     - Do NOT hide x_location or y_location.
     - Do NOT hide more than one value per vector row.
 
@@ -91,11 +88,11 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
     6. Each vector must correspond to one separate visible object matching the subject.
 
     Examples:
-    Plane image → multiple aircraft moving or experiencing forces  
+    F16 image → multiple aircraft moving or experiencing forces  
     Person image → multiple people walking, pushing, lifting, or moving
 
     Forbidden substitutions:
-    Plane image → UAVs, drones, missiles, satellites  
+    F16 image → UAVs, drones, missiles, satellites  
     Person image → blood vessels, organs, cells, internal anatomy
 
     CRITICAL RULE:
@@ -105,6 +102,15 @@ def generate_problem(domain, topic, image_info, injection, context, velocity_uni
     STYLE RULES:
     - If style is Basic, write a short straightforward homework problem.
     - If style is Creative, write a richer scenario, but do not change the math.
+
+    TASKS SECTION:
+    Tasks are {tasks}:
+    - If tasks are None or Empty, choose 1 - 2 tasks for the student as normal.
+    - If tasks present, print the  out word for word in the Tasks section of the output.
+    - If a task says to solve a specific feature of a vector then hide that vector's feature in the matrix.
+    - If the task says to solve for a whole vector, then hide the whole row of information for that vector.
+    - Never try to solve a task for the user.
+
 
     FORMAT REQUIREMENTS:
 
