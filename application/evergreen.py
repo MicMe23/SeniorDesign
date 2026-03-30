@@ -2,6 +2,8 @@
 import streamlit as st
 import streamlit.components.v1 as component
 
+import base64
+
 # data formatting
 import pandas as pd
 import numpy as np
@@ -32,6 +34,10 @@ from test_api import *
 from model import *
 
 ############################## UI prep ##############################
+
+def make_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
 # make a file named problem_metadata in the application directory which stores entry (dictionary)
 def save_problem_log(entry, filename="problem_metadata.json"):
@@ -94,9 +100,9 @@ unit_selector = {
 
 # Asset to img
 img_selector = {
-    "Plane (seen from the side)": "/static/aerospace/f16_clipart_cropped.png",
-    "Person (seen from above)": "/static/bme/man_running.png",
-    "Car (seen from above)": "/static/mechanical/red_f1_car.png"
+    "Plane (seen from the side)": "application/assets/aerospace/f16_clipart_cropped.png",
+    "Person (seen from above)": "application/assets/bme/man_running.png",
+    "Car (seen from above)": "application/assets/mechanical/red_f1_car.png"
 }
 
 # init session states
@@ -235,6 +241,10 @@ if st.session_state.problem:
                     st.session_state.last_meta = {"domain": domain,  "subtopic": subtopic}
                     
     #with st.container(border=False):
+
+    b64_img = make_base64(img_selector.get(image_info, "null"))
+    js_img = f'"data:image/png;base64,{b64_img}"'
+
     # Read in unedited html and js files
     with open("application\diagram_gen\index.html", "r") as html:
         html_code = html.read()
@@ -252,7 +262,7 @@ if st.session_state.problem:
         
     # Make all scripts inline and inject the csv
     html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
-    html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {img_selector.get(image_info, "null")};</script><script>{html_main}</script>')
+    html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
 
     # Debug. Shows what the component.html is receiving
     st.code(html_code[:-2000])
