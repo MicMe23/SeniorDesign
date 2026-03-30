@@ -23,8 +23,6 @@ from reportlab.lib.pagesizes import letter
 from problem_gen import vectors
 import evergreen_utils
 
-test = vectors.Vector(1,1,1,1)
-print(test.get_magnitude())
 from problem_gen import vector_matrix
 from problem_gen import problem_metadata
 from problem_gen import calculate_problem_solution
@@ -293,12 +291,13 @@ if st.session_state.problem:
             "matrix_payload": matrix_payload,
             "tasks": tasks
             }       
-    #with st.container(border=False):
 
+    # Generate the base64 version of the selected image to then turn it into a form
+    # javascript can read inline.
     b64_img = make_base64(img_selector.get(image_info, "null"))
     js_img = f'"data:image/png;base64,{b64_img}"'
 
-    # Read in unedited html and js files
+    # Read in unedited html and js files to run inline
     with open("application\diagram_gen\index.html", "r") as html:
         html_code = html.read()
         html.close()
@@ -313,15 +312,16 @@ if st.session_state.problem:
     df = pd.read_csv("application/diagram_gen/data/vector_matrix.csv")
     csvInj = df.to_csv(index=False)
         
-    # Make all scripts inline and inject the csv
+    # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
     html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
     html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
 
     # Debug. Shows what the component.html is receiving
-    st.code(html_code[:-2000])
-
-    # Run the flattened code and display in streamlit
-    component.html(html_code, height=1000, width=1000, scrolling=True)
+    #st.code(html_code[:-2000])
+    col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
+    with col2:
+        # Run the flattened code and display in streamlit
+        component.html(html_code, height=1000, width=1000, scrolling=True)
 
 else:
     st.info("Choose settings then click **Generate problem**.")
