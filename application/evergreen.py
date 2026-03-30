@@ -21,8 +21,6 @@ from reportlab.lib.pagesizes import letter
 from application.problem_gen import vectors
 from application import evergreen_utils
 
-test = vectors.Vector(1,1,1,1)
-print(test.get_magnitude())
 from application.problem_gen import vector_matrix
 from application.problem_gen import problem_metadata
 from application.problem_gen import calculate_problem_solution
@@ -61,6 +59,11 @@ subtopic_list = [
     "4. Couples",
     "4. Equivalent Transformations",
     "4. Statically Equivalent Systems"
+]
+
+scenario = [
+    "No Scenario",
+    "Soccer Match"
 ]
 
 # --- Context selector ---
@@ -134,10 +137,46 @@ st.header("Matrix Gen")
 # Displays the Generate Matrix button
 # number of vectors for generated matrix
 num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+selected_scenario = st.selectbox("Scenario", options=scenario)
+uploaded_csv = st.file_uploader(
+    "Upload a CSV matrix",
+    type=["csv"],
+    help="Upload a CSV to load directly into the matrix editor."
+)
 generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
 
-# We will replace this when the matrix generator is useable. For now it loads in 1 of 2 random matrices in data/chapter2
-#matrix_name, matrix_path, MATRIX = load_random_matrix()
+EXPECTED_COLUMNS = [
+    "magnitude",
+    "x_component",
+    "y_component",
+    "z_component",
+    "direction",
+    "x_location",
+    "y_location",
+    "z_location"
+]
+
+if uploaded_csv is not None:
+    try:
+        uploaded_df = pd.read_csv(uploaded_csv)
+
+        # remove accidental spaces in headers
+        uploaded_df.columns = uploaded_df.columns.str.strip()
+
+        missing_cols = [col for col in EXPECTED_COLUMNS if col not in uploaded_df.columns]
+        if missing_cols:
+            st.error(f"Uploaded CSV is missing required columns: {missing_cols}")
+        else:
+            # keep only the columns you care about, in the right order
+            uploaded_df = uploaded_df[EXPECTED_COLUMNS]
+
+            st.session_state.matrix_df = uploaded_df
+            st.session_state.matrix_name = uploaded_csv.name
+
+            st.success(f"Loaded CSV: {uploaded_csv.name}")
+
+    except Exception as e:
+        st.error(f"Could not read uploaded CSV: {e}")
 
 # ---------------- csv editor ----------------
 if st.session_state.matrix_df is not None:
@@ -165,6 +204,7 @@ if generate_matrix_clicked:
         problem_type = subtopic,
         number_of_vectors=int(num_vectors),
         units = velocity_unit,
+        scenario = selected_scenario
     )
     pm.set_vector_array_randomly()
 

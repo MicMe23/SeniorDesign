@@ -1,39 +1,69 @@
 {
-    "domain": "Aerospace Engineering",
-    "subtopic": "2D Coordinate System & Vectors",
-    "custom_context": "",
-    "level_of_detail": "Basic",
+    "domain": "Generic",
+    "subtopic": "Vector Addition",
+    "custom_context": "soccer match between 2 people",
+    "level_of_detail": "Creative",
     "unit_type": "Velocity",
     "velocity_unit": "Meters per second",
-    "matrix_name": "generated_3_vectors",
+    "matrix_name": "generated_4_vectors",
     "matrix_payload": {
         "vectors": [
             {
-                "magnitude": 18.358,
-                "x_component": 16.0,
-                "y_component": -9.0,
-                "direction": 299.358,
-                "x_location": -8.0,
-                "y_location": 0.0
+                "magnitude": 7.616,
+                "x_component": 7.0,
+                "y_component": -3.0,
+                "z_component": 1.0,
+                "direction": 293.199,
+                "x_location": -20.0,
+                "y_location": 10.0,
+                "z_location": 1.0
             },
             {
-                "magnitude": 1.0,
-                "x_component": 1.0,
-                "y_component": 0.0,
-                "direction": 0.0,
-                "x_location": -1.0,
-                "y_location": -6.0
+                "magnitude": 17.464,
+                "x_component": -16.0,
+                "y_component": 7.0,
+                "z_component": 2.0,
+                "direction": 156.371,
+                "x_location": 6.0,
+                "y_location": -3.0,
+                "z_location": 1.0
             },
             {
-                "magnitude": 21.471,
-                "x_component": -19.0,
-                "y_component": 10.0,
-                "direction": 152.241,
-                "x_location": 9.0,
-                "y_location": -4.0
+                "magnitude": 18.439,
+                "x_component": -14.0,
+                "y_component": 12.0,
+                "z_component": 3.0,
+                "direction": 139.399,
+                "x_location": 17.0,
+                "y_location": -2.0,
+                "z_location": 1.0
+            },
+            {
+                "magnitude": 9.055,
+                "x_component": 9.0,
+                "y_component": 1.0,
+                "z_component": 1.0,
+                "direction": 6.34,
+                "x_location": -12.0,
+                "y_location": 10.0,
+                "z_location": 1.0
             }
         ],
-        "computed": {}
+        "computed": {
+            "resultant": {
+                "magnitude": 23.108,
+                "direction": [
+                    129.47245984834382,
+                    72.36695270295573
+                ],
+                "x_component": -14.0,
+                "y_component": 17.0,
+                "z_component": 7.0,
+                "x_location": 0,
+                "y_location": 0,
+                "z_location": 0
+            }
+        }
     },
-    "tasks": ""
+    "tasks": null
 }
