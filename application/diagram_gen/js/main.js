@@ -25,6 +25,8 @@ d3.csv('data/vector_matrix.csv')
 			'containerWidth': 1000
 		}, data);
 
+    downloadSVG();
+
 })
 .catch(error => {
     console.error('Error:');
