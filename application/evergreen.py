@@ -45,8 +45,7 @@ st.title("Evergreen Classroom")
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
 subtopic_list = [
-    "2D Coordinate System & Vectors",
-    "3D Coordinate System & Vectors",
+    "Coordinate System & Vectors",
     "Unit Vectors",
     "Vector Addition",
     "Dot Product",
@@ -62,8 +61,12 @@ subtopic_list = [
 ]
 
 scenario = [
-    "No Scenario",
-    "Soccer Match"
+    "No Scenario 2D",
+    "No Scenario 3D",
+    "Soccer Match 2D",
+    "Soccer Match 3D",
+    "Aircraft Formation 2D",
+    "Aircraft Formation 3D"
 ]
 
 # --- Context selector ---
@@ -74,7 +77,7 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Just the arrow" "F16 (seen from the side)", "Person (seen from above)", "F1 Car (seen from above)"],
+    "Generic": ["No Image", "Just the arrow", "F16 (seen from the side)", "Person (seen from above)", "F1 Car (seen from above)"],
     "Aerospace Engineering": ["No Image","Just the arrow", "F16 (seen from the side)"],
     "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
@@ -222,7 +225,7 @@ if generate_prompt_clicked:
         else:
 
             #building the payload to be injested by the LLM
-            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic)
+            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, )
 
             log_entry = {
             "domain": domain,
@@ -258,7 +261,7 @@ if meta:
     st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
 
 if st.session_state.problem:
-    with st.container(border=True, width = 750):
+    with st.container(border=False, width = 1000):
         st.subheader("Generated Problem")
         st.markdown(st.session_state.problem)
 
