@@ -98,3 +98,62 @@ def build_llm_payload(df, subtopic):
         }
 
     return payload
+
+def recalculate_matrix_df(df: pd.DataFrame):
+    updated_rows = []
+
+    for i, row in df.iterrows():
+        #check if 3d
+        z_component = float(row["z_component"]) if "z_component" in df.columns else 0.0
+        z_location = float(row["z_location"]) if "z_location" in df.columns else 0.0
+        is_2d = (z_component == 0 and z_location == 0)
+
+        if is_2d:
+            vec = vectors.Vector(
+                2,
+                float(row["x_component"]),
+                float(row["y_component"]),
+                0,
+                float(row["x_location"]),
+                float(row["y_location"]),
+                0
+            )
+
+            updated_rows.append({
+                "magnitude": round(vec.get_magnitude(), 3),
+                "x_component": float(vec.x_component),
+                "y_component": float(vec.y_component),
+                "z_component": 0.0,
+                "direction": round(vec.get_direction(), 3),
+                "x_location": float(vec.x_location),
+                "y_location": float(vec.y_location),
+                "z_location": 0.0,
+            })
+
+        else:
+            vec = vectors.Vector(
+                3,
+                float(row["x_component"]),
+                float(row["y_component"]),
+                float(row["z_component"]),
+                float(row["x_location"]),
+                float(row["y_location"]),
+                float(row["z_location"])
+            )
+
+            #talk about with jp
+            theta, phi = vec.get_direction()
+
+            updated_rows.append({
+                "magnitude": round(vec.get_magnitude(), 3),
+                "x_component": float(vec.x_component),
+                "y_component": float(vec.y_component),
+                "z_component": float(vec.z_component),
+                "azimuth": round(theta, 3),
+                "phi": round(phi, 3),
+                "x_location": float(vec.x_location),
+                "y_location": float(vec.y_location),
+                "z_location": float(vec.z_location),
+            })
+
+    return pd.DataFrame(updated_rows)
