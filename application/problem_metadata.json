@@ -1,38 +1,55 @@
 {
-    "domain": "Aerospace Engineering",
-    "subtopic": "2D Coordinate System & Vectors",
-    "custom_context": "make the question based around the f16",
-    "level_of_detail": "Creative",
+    "domain": "Biomedical Engineering",
+    "subtopic": "Coordinate System & Vectors",
+    "custom_context": "",
+    "level_of_detail": "Basic",
     "unit_type": "Velocity",
     "velocity_unit": "Meters per second",
-    "matrix_name": "generated_3_vectors",
+    "matrix_name": "generated_4_vectors",
     "matrix_payload": {
         "vectors": [
             {
-                "magnitude": 1.0,
-                "x_component": 0.0,
-                "y_component": -1.0,
-                "direction": 270.0,
-                "x_location": -6.0,
-                "y_location": 3.0
+                "magnitude": 12.806,
+                "x_component": -10.0,
+                "y_component": -8.0,
+                "z_component": 2.0,
+                "direction": 218.66,
+                "x_location": 4.0,
+                "y_location": 1.0,
+                "z_location": 2.0
             },
             {
-                "magnitude": 8.062,
-                "x_component": -7.0,
-                "y_component": 4.0,
-                "direction": 150.255,
-                "x_location": 2.0,
-                "y_location": 5.0
+                "magnitude": 17.205,
+                "x_component": 10.0,
+                "y_component": -14.0,
+                "z_component": 2.0,
+                "direction": 324.462,
+                "x_location": -3.0,
+                "y_location": 10.0,
+                "z_location": 2.0
             },
             {
-                "magnitude": 3.0,
-                "x_component": 0.0,
-                "y_component": 3.0,
-                "direction": 90.0,
-                "x_location": -10.0,
-                "y_location": 6.0
+                "magnitude": 11.705,
+                "x_component": 11.0,
+                "y_component": -4.0,
+                "z_component": 2.0,
+                "direction": 289.983,
+                "x_location": -2.0,
+                "y_location": 4.0,
+                "z_location": 2.0
+            },
+            {
+                "magnitude": 22.023,
+                "x_component": -17.0,
+                "y_component": -14.0,
+                "z_component": 2.0,
+                "direction": 219.472,
+                "x_location": 10.0,
+                "y_location": 9.0,
+                "z_location": 2.0
             }
         ],
         "computed": {}
-    }
+    },
+    "tasks": "1. find x and y component for plane 1\n2. find magnitude of plane 2\n3. at this rate will the planes crash?"
 }

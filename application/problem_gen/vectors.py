@@ -11,12 +11,17 @@ DEFAULT_Z_VALUES_IN_2D = 0
 def vectors_to_df(vector_array) -> pd.DataFrame:
     rows = []
     for v in vector_array:
+        direction = v.get_direction()
+        theta = round(direction[0], 3)
+        phi = round(direction[1], 3)
+        outstring = "(" + str(theta) + ", " + str(phi) + ")"
         rows.append({
             "magnitude": round(v.get_magnitude(), 3),
             "x_component": float(v.x_component),
             "y_component": float(v.y_component),
             "z_component": float(v.z_component),
-            "direction": round(v.get_direction(), 3),
+            #"direction": round(v.get_direction(), 3),
+            "direction": outstring,
             "x_location": float(v.x_location),
             "y_location": float(v.y_location),
             "z_location": float(v.z_location)
