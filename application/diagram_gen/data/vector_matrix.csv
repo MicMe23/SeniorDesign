@@ -1,4 +1,5 @@
-magnitude,x_component,y_component,direction,x_location,y_location
-5.831,3,5,59.036,2,3
-17.810,-5,-6,230.194,-3,7
-7.616,7,3,23.199,-4,-5
+magnitude,x_component,y_component,z_component,direction,x_location,y_location,z_location
+21.26,16,-14,0,311.186,-6,5,0
+16.125,-14,-8,0,209.745,7,2,0
+5.831,-3,5,0,120.964,-2,-9,0
+16.553,7,15,0,64.983,-2,-9,0

@@ -185,21 +185,44 @@ class CartesianGraph {
         const x = vis.xScale(p.d.x_location);
         const y = vis.yScale(p.d.y_location);
 
-        const angle = -p.d.direction + 180;
+        const angle = p.d.direction;
+        const normalizedAngle = ((angle % 360) + 360) % 360;
+        
+        let rotation = 0;
+        let flipVertical = false;
 
-        console.log(p.d.direction, angle);
+        // Right-facing (Quadrants I and IV): rotate and flip vertically.
+        if ((normalizedAngle >= 0 && normalizedAngle <= 90) || (normalizedAngle >= 270 && normalizedAngle <= 360)) {
+          flipVertical = true;
+          if (normalizedAngle <= 90) {
+            rotation = normalizedAngle;
+          } else {
+            rotation = -(360 - normalizedAngle);
+          }
+          rotation += 180; // Flip the image to face right
+        }
+        // Left-facing (Quadrants II and III): rotate without vertical flip.
+        else if (normalizedAngle > 90 && normalizedAngle <= 180) {
+          rotation = 180 - normalizedAngle;
+        } else {
+          rotation = normalizedAngle - 180;
+          rotation = -rotation; // Flip the rotation for left-facing
+        }
 
-        if ((angle >= 0 && angle <= 90) || (angle >= 270 && angle <= 360)) {
+        if (flipVertical) {
+          console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
           return `
-          rotate(${angle}, ${x}, ${y})
           translate(${x}, ${y})
           scale(1, -1)
           translate(${-x}, ${-y})
+          rotate(${rotation}, ${x}, ${y})
           `
         }
-        else {
-          return `rotate(${angle}, ${x}, ${y})`; // rotate(${-p.d.direction}, ${x}, ${y})
-        }
+
+        console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
+
+
+        return `rotate(${rotation}, ${x}, ${y})`;
       });
 
   }
