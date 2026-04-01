@@ -27,6 +27,8 @@ from problem_gen import vector_matrix
 from problem_gen import problem_metadata
 from problem_gen import calculate_problem_solution
 
+from application.evergreen_utils import *
+
 # api and model code
 from test_api import *
 from model import *
@@ -44,15 +46,13 @@ def save_problem_log(entry, filename="problem_metadata.json"):
         json.dump(entry, f, indent=4)
 
 
-st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="centered")
-
+st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
 st.title("Evergreen Classroom")
 
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
 subtopic_list = [
-    "2D Coordinate System & Vectors",
-    "3D Coordinate System & Vectors",
+    "Coordinate System & Vectors",
     "Unit Vectors",
     "Vector Addition",
     "Dot Product",
@@ -68,8 +68,12 @@ subtopic_list = [
 ]
 
 scenario = [
-    "No Scenario",
-    "Soccer Match"
+    "No Scenario 2D",
+    "No Scenario 3D",
+    "Soccer Match 2D",
+    "Soccer Match 3D",
+    "Aircraft Formation 2D",
+    "Aircraft Formation 3D"
 ]
 
 # --- Context selector ---
@@ -200,7 +204,15 @@ if st.session_state.matrix_df is not None:
             num_rows="dynamic",
             key="matrix_editor",
         )
-        st.session_state.matrix_df = edited_df
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("Apply Edits", use_container_width=True):
+                st.session_state.matrix_df = edited_df
+
+        with col2:
+            if st.button("Recalculate Magnitude / Direction", use_container_width=True):
+                st.session_state.matrix_df = recalculate_matrix_df(edited_df)
 else:
     st.info("Please generate a matrix to start editing.")
 st.divider()
@@ -227,6 +239,7 @@ if generate_matrix_clicked:
     # debug line
     st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
 
+
 # ---------- Generate Button Logic ----------
 if generate_prompt_clicked:
     if generate_prompt_clicked:
@@ -234,8 +247,9 @@ if generate_prompt_clicked:
             st.warning("Please generate a matrix first.")
         else:
 
+            st.session_state.matrix_df.to_csv('data/matrix_gen_output/vector_matrix.csv', index=False)
             #building the payload to be injested by the LLM
-            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic)
+            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, )
 
             log_entry = {
             "domain": domain,
@@ -271,7 +285,7 @@ if meta:
     st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
 
 if st.session_state.problem:
-    with st.container(border=True, width = 750):
+    with st.container(border=False, width = 1000):
         st.subheader("Generated Problem")
         st.markdown(st.session_state.problem)
 

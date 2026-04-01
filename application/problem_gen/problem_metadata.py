@@ -18,7 +18,7 @@ class ProblemMetadata:
         self.vector_array = vector_matrix.get_vector_array_from_vector_matrix_from_csv(csv_filepath)
 
     def set_vector_array_randomly(self):
-        if self.scenario == "Soccer Match":
+        if self.scenario == "Soccer Match 2D":
             num_positive = math.ceil(self.number_of_vectors / 2)
             num_negative = self.number_of_vectors - num_positive
 
@@ -40,7 +40,7 @@ class ProblemMetadata:
                     # regenerate until valid
                     random_vector = vectors.generate_random_vector_2d()
                 
-                # make positions realistic
+                # positions realistic to a real game
                 if directions[i] == 1:
                     random_vector.x_location = random.randint(-20, -5)
                 else:
@@ -53,14 +53,101 @@ class ProblemMetadata:
                 else:
                     self.vector_array = np.append(self.vector_array, random_vector)
 
-        else:
+        elif self.scenario == "Aircraft Formation 2D":
+            for i in range(self.number_of_vectors):
+                random_vector = vectors.generate_random_vector_2d()
+
+                while True:
+                    # all aircraft move forward toward pos x
+                    if random_vector.x_component > 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
+                        break
+
+                    random_vector = vectors.generate_random_vector()
+
+                # closeish together
+                random_vector.x_location = random.randint(-10, 10)
+                random_vector.y_location = random.randint(-5, 5)
+
+                if i == 0:
+                    self.vector_array = np.array([random_vector])
+                else:
+                    self.vector_array = np.append(self.vector_array, random_vector)
+
+        elif self.scenario == "Soccer Match 3D":
+            num_positive = math.ceil(self.number_of_vectors / 2)
+            num_negative = self.number_of_vectors - num_positive
+
+            directions = [1] * num_positive + [-1] * num_negative
+            random.shuffle(directions)
+
+            for i in range(self.number_of_vectors):
+                random_vector = vectors.generate_random_vector_3d()
+
+                # make directions realistic
+                while True:
+                    if directions[i] == 1:
+                        if random_vector.x_component > 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
+                            break
+                    else:
+                        if random_vector.x_component < 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
+                            break
+
+                    # regenerate until valid
+                    random_vector = vectors.generate_random_vector_3d()
+                
+                # positions realistic to a real game
+                if directions[i] == 1:
+                    random_vector.x_location = random.randint(-20, -5)
+                    random_vector.z_location = random.randint(-20, -5)
+                else:
+                    random_vector.x_location = random.randint(5, 20)
+                    random_vector.z_location = random.randint(5, 20)
+
+                random_vector.y_location = random.randint(-10, 10)
+
+
+                if i == 0:
+                    self.vector_array = np.array([random_vector])
+                else:
+                    self.vector_array = np.append(self.vector_array, random_vector)
+
+        elif self.scenario == "Aircraft Formation 3D":
+            for i in range(self.number_of_vectors):
+                random_vector = vectors.generate_random_vector_3d()
+
+                while True:
+                    # all aircraft move forward toward pos x
+                    if random_vector.x_component > 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
+                        break
+
+                    random_vector = vectors.generate_random_vector()
+
+                # closeish together
+                random_vector.x_location = random.randint(-10, 10)
+                random_vector.y_location = random.randint(-5, 5)
+                random_vector.z_location = random.randint(-5, 5)
+
+                if i == 0:
+                    self.vector_array = np.array([random_vector])
+                else:
+                    self.vector_array = np.append(self.vector_array, random_vector)            
+
+        elif self.scenario == 'No Scenario 2D':
             for i in range(self.number_of_vectors):
                 random_vector = vectors.generate_random_vector_2d()
                 if i == 0:
                     self.vector_array = np.array([random_vector])
                 else:
                     self.vector_array = np.append(self.vector_array, random_vector)
-        ## i need to make an else statement to catch errors
+
+        elif self.scenario == 'No Scenario 3D':
+            for i in range(self.number_of_vectors):
+                random_vector = vectors.generate_random_vector_3d()
+                if i == 0:
+                    self.vector_array = np.array([random_vector])
+                else:
+                    self.vector_array = np.append(self.vector_array, random_vector)
+        
 
 # TEST TO SET VECTOR ARRAY FROM CSV FILE
 # --------------------------------------------------
