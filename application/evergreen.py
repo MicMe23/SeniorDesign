@@ -27,7 +27,7 @@ from problem_gen import vector_matrix
 from problem_gen import problem_metadata
 from problem_gen import calculate_problem_solution
 
-from application.evergreen_utils import *
+from evergreen_utils import *
 
 # api and model code
 from test_api import *
