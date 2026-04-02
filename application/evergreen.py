@@ -325,7 +325,7 @@ with page_col2:
             graph.close()
 
         # Read in the csv to inject it into the html when it runs
-        df = pd.read_csv("application/diagram_gen/data/vector_matrix.csv")
+        df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
         csvInj = df.to_csv(index=False)
             
         # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
