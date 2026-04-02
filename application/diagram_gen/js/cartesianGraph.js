@@ -162,8 +162,18 @@ class CartesianGraph {
     vis.vectorGroups.selectAll('text')
       .data((d, i) => [{ d: d, i: i }])
       .join('text')
-      .attr('x', p => vis.xScale(p.d.x_location + p.d.x_component) + 6)
-      .attr('y', p => vis.yScale(p.d.y_location + p.d.y_component) - 6)
+      .attr('x', p => {
+        let len = Math.sqrt((p.d.x_component ** 2) + (p.d.y_component ** 2)) || 1
+        let forwards = 0.1
+        let sideways = 0.3
+
+        return vis.xScale(p.d.x_location + p.d.x_component + (p.d.x_component / len) * forwards + (-p.d.y_component / len) * sideways)})
+      .attr('y', p => {
+        let len = Math.sqrt((p.d.x_component ** 2) + (p.d.y_component ** 2)) || 1
+        let forwards = 0.1
+        let sideways = 0.3
+
+        return vis.yScale(p.d.y_location + p.d.y_component + (p.d.y_component / len) * forwards + (p.d.x_component / len) * sideways)})
       .text(p => String.fromCharCode(65 + p.i))
       .attr('font-size', 12)
       .attr('fill', p => vis.colorScale(p.i));
@@ -179,7 +189,7 @@ class CartesianGraph {
       .attr('href', img) //'../../assets/aerospace/f16_clipart_cropped.png' , '../../assets/bme/man_running.png', '../../assets/mechanical/red_f1_car.png'
       .attr('width', subjectObjectWidth)
       .attr('height', subjectObjectHeight)
-      .attr('x', p => vis.xScale(p.d.x_location) - subjectObjectWidth / 2) // - subjectObjectWidth
+      .attr('x', p => vis.xScale(p.d.x_location)) // - subjectObjectWidth
       .attr('y', p => vis.yScale(p.d.y_location) - subjectObjectHeight / 2)
       .attr('transform', p => {
         const x = vis.xScale(p.d.x_location);
