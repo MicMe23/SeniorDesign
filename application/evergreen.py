@@ -35,6 +35,8 @@ from model import *
 
 ############################## UI prep ##############################
 
+Page_col1, page_col2, page_col3 = st.columns([1,2,1])
+
 def make_base64(path):
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
@@ -45,9 +47,9 @@ def save_problem_log(entry, filename="problem_metadata.json"):
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(entry, f, indent=4)
 
-
-st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
-st.title("Evergreen Classroom")
+with page_col2:
+    st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
+    st.title("Evergreen Classroom")
 
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
@@ -121,173 +123,173 @@ if "matrix_df" not in st.session_state:
     st.session_state.matrix_df = None
 if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
+with page_col2:
+    st.divider()
+    ################ Section 1: Problem settings #################
+    st.header("Problem Settings")
 
-st.divider()
-################ Section 1: Problem settings #################
-st.header("Problem Settings")
+    col1, col2 = st.columns([1,1])
 
-col1, col2 = st.columns([1,1])
+    with col1:
+        subtopic = st.selectbox("Topic", options=subtopic_list, index=0)
 
-with col1:
-    subtopic = st.selectbox("Topic", options=subtopic_list, index=0)
+    with col2:
+        context = st.selectbox("Level of Detail", options=context)
 
-with col2:
-    context = st.selectbox("Level of Detail", options=context)
+    with col1:
+        domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
-with col1:
-    domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
+    with col2:
+        image_info = st.selectbox("Image", options=asset_choices[domain], index=0)
 
-with col2:
-    image_info = st.selectbox("Image", options=asset_choices[domain], index=0)
+    with col1:
+        unit_type = st.selectbox("Unit Type", options=list(unit_types.keys()), index=0)
 
-with col1:
-    unit_type = st.selectbox("Unit Type", options=list(unit_types.keys()), index=0)
+    with col2:
+        velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
 
-with col2:
-    velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
+    injection = st.text_input("Custom context (1 - 2 scentences)")
+    tasks = st.text_area("Task list: number tasks if you have specific tasks in mind", value=None, height=300 )
+    st.divider()
 
-injection = st.text_input("Custom context (1 - 2 scentences)")
-tasks = st.text_area("Task list: number tasks if you have specific tasks in mind", value=None, height=300 )
-st.divider()
-
-st.header("Matrix Gen")
-# Displays the Generate Matrix button
-# number of vectors for generated matrix
-num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
-selected_scenario = st.selectbox("Scenario", options=scenario)
-uploaded_csv = st.file_uploader(
-    "Upload a CSV matrix",
-    type=["csv"],
-    help="Upload a CSV to load directly into the matrix editor."
-)
-generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
-
-EXPECTED_COLUMNS = [
-    "magnitude",
-    "x_component",
-    "y_component",
-    "z_component",
-    "direction",
-    "x_location",
-    "y_location",
-    "z_location"
-]
-
-if uploaded_csv is not None:
-    try:
-        uploaded_df = pd.read_csv(uploaded_csv)
-
-        # remove accidental spaces in headers
-        uploaded_df.columns = uploaded_df.columns.str.strip()
-
-        missing_cols = [col for col in EXPECTED_COLUMNS if col not in uploaded_df.columns]
-        if missing_cols:
-            st.error(f"Uploaded CSV is missing required columns: {missing_cols}")
-        else:
-            # keep only the columns you care about, in the right order
-            uploaded_df = uploaded_df[EXPECTED_COLUMNS]
-
-            st.session_state.matrix_df = uploaded_df
-            st.session_state.matrix_name = uploaded_csv.name
-
-            st.success(f"Loaded CSV: {uploaded_csv.name}")
-
-    except Exception as e:
-        st.error(f"Could not read uploaded CSV: {e}")
-
-# ---------------- csv editor ----------------
-if st.session_state.matrix_df is not None:
-    with st.container(border=True, width = 750):
-        st.subheader("Edit your data below:")
-        edited_df = st.data_editor(
-            st.session_state.matrix_df,
-            num_rows="dynamic",
-            key="matrix_editor",
-        )
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if st.button("Apply Edits", use_container_width=True):
-                st.session_state.matrix_df = edited_df
-
-        with col2:
-            if st.button("Recalculate Magnitude / Direction", use_container_width=True):
-                st.session_state.matrix_df = recalculate_matrix_df(edited_df)
-else:
-    st.info("Please generate a matrix to start editing.")
-st.divider()
-
-# Displays the Generate Problem button
-generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
-
-st.divider()
-
-# ---------------- Matrix generation ----------------
-if generate_matrix_clicked:
-    # Create a new matrix
-    pm = problem_metadata.ProblemMetadata(
-        problem_type = subtopic,
-        number_of_vectors=int(num_vectors),
-        units = velocity_unit,
-        scenario = selected_scenario
+    st.header("Matrix Gen")
+    # Displays the Generate Matrix button
+    # number of vectors for generated matrix
+    num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+    selected_scenario = st.selectbox("Scenario", options=scenario)
+    uploaded_csv = st.file_uploader(
+        "Upload a CSV matrix",
+        type=["csv"],
+        help="Upload a CSV to load directly into the matrix editor."
     )
-    pm.set_vector_array_randomly()
+    generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
 
-    # Convert to DataFrame for the editor and LLM
-    st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
+    EXPECTED_COLUMNS = [
+        "magnitude",
+        "x_component",
+        "y_component",
+        "z_component",
+        "direction",
+        "x_location",
+        "y_location",
+        "z_location"
+    ]
 
-    # debug line
-    st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
+    if uploaded_csv is not None:
+        try:
+            uploaded_df = pd.read_csv(uploaded_csv)
+
+            # remove accidental spaces in headers
+            uploaded_df.columns = uploaded_df.columns.str.strip()
+
+            missing_cols = [col for col in EXPECTED_COLUMNS if col not in uploaded_df.columns]
+            if missing_cols:
+                st.error(f"Uploaded CSV is missing required columns: {missing_cols}")
+            else:
+                # keep only the columns you care about, in the right order
+                uploaded_df = uploaded_df[EXPECTED_COLUMNS]
+
+                st.session_state.matrix_df = uploaded_df
+                st.session_state.matrix_name = uploaded_csv.name
+
+                st.success(f"Loaded CSV: {uploaded_csv.name}")
+
+        except Exception as e:
+            st.error(f"Could not read uploaded CSV: {e}")
+
+    # ---------------- csv editor ----------------
+    if st.session_state.matrix_df is not None:
+        with st.container(border=True, width = 750):
+            st.subheader("Edit your data below:")
+            edited_df = st.data_editor(
+                st.session_state.matrix_df,
+                num_rows="dynamic",
+                key="matrix_editor",
+            )
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button("Apply Edits", use_container_width=True):
+                    st.session_state.matrix_df = edited_df
+
+            with col2:
+                if st.button("Recalculate Magnitude / Direction", use_container_width=True):
+                    st.session_state.matrix_df = recalculate_matrix_df(edited_df)
+    else:
+        st.info("Please generate a matrix to start editing.")
+    st.divider()
+
+    # Displays the Generate Problem button
+    generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
+
+    st.divider()
+
+    # ---------------- Matrix generation ----------------
+    if generate_matrix_clicked:
+        # Create a new matrix
+        pm = problem_metadata.ProblemMetadata(
+            problem_type = subtopic,
+            number_of_vectors=int(num_vectors),
+            units = velocity_unit,
+            scenario = selected_scenario
+        )
+        pm.set_vector_array_randomly()
+
+        # Convert to DataFrame for the editor and LLM
+        st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
+
+        # debug line
+        st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
 
 
-# ---------- Generate Button Logic ----------
-if generate_prompt_clicked:
+    # ---------- Generate Button Logic ----------
     if generate_prompt_clicked:
-        if st.session_state.matrix_df is None:
-            st.warning("Please generate a matrix first.")
-        else:
+        if generate_prompt_clicked:
+            if st.session_state.matrix_df is None:
+                st.warning("Please generate a matrix first.")
+            else:
 
-            st.session_state.matrix_df.to_csv('data/matrix_gen_output/vector_matrix.csv', index=False)
-            #building the payload to be injested by the LLM
-            matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, )
+                st.session_state.matrix_df.to_csv('data/matrix_gen_output/vector_matrix.csv', index=False)
+                #building the payload to be injested by the LLM
+                matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, )
 
-            log_entry = {
-            "domain": domain,
-            "subtopic": subtopic,
-            "custom_context": injection,
-            "level_of_detail": context,
-            "unit_type": unit_type,
-            "velocity_unit": velocity_unit,
-            "matrix_name": st.session_state.matrix_name,
-            "matrix_payload": matrix_payload,
-            "tasks": tasks
-            }
+                log_entry = {
+                "domain": domain,
+                "subtopic": subtopic,
+                "custom_context": injection,
+                "level_of_detail": context,
+                "unit_type": unit_type,
+                "velocity_unit": velocity_unit,
+                "matrix_name": st.session_state.matrix_name,
+                "matrix_payload": matrix_payload,
+                "tasks": tasks
+                }
 
-            save_problem_log(log_entry)
+                save_problem_log(log_entry)
 
-            with st.spinner("Generating…"):
-                st.session_state.problem = generate_problem(
-                    domain,
-                    subtopic,
-                    image_info,
-                    injection,
-                    context,
-                    velocity_unit,
-                    st.session_state.matrix_name,
-                    matrix_payload,
-                    tasks
-                )
+                with st.spinner("Generating…"):
+                    st.session_state.problem = generate_problem(
+                        domain,
+                        subtopic,
+                        image_info,
+                        injection,
+                        context,
+                        velocity_unit,
+                        st.session_state.matrix_name,
+                        matrix_payload,
+                        tasks
+                    )
 
-                st.session_state.last_meta = log_entry
+                    st.session_state.last_meta = log_entry
 
-meta = st.session_state.last_meta
-if meta:
-    st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
+    meta = st.session_state.last_meta
+    if meta:
+        st.caption(f"**Selected:** {meta['subtopic']} • {meta['domain']}")
 
-if st.session_state.problem:
-    with st.container(border=False, width = 1000):
-        st.subheader("Generated Problem")
-        st.markdown(st.session_state.problem)
+    if st.session_state.problem:
+        with st.container(border=False, width = 1000):
+            st.subheader("Generated Problem")
+            st.markdown(st.session_state.problem)
 
         col1, col2 = st.columns([1, 1])
         with col1:
@@ -337,5 +339,5 @@ if st.session_state.problem:
         # Run the flattened code and display in streamlit
         component.html(html_code, height=1000, width=1000, scrolling=True)
 
-else:
-    st.info("Choose settings then click **Generate problem**.")
+    else:
+        st.info("Choose settings then click **Generate problem**.")
