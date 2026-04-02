@@ -30,8 +30,8 @@ magnitude, x_component, y_component, z_component, direction, x_location, y_locat
 DIRECTION RULES:
 - In 2D, direction is a single angle in degrees measured from the positive x-axis in the xy-plane.
 - In 3D, direction should be described using two angles:
-  1. azimuth (theta): the angle in the xy-plane from the positive x-axis
-  2. elevation/phi: the second direction angle returned by the backend
+  1. theta: the angle in the xy-plane from the positive x-axis
+  2. phi: the second direction angle returned by the backend
 - Do not collapse a 3D direction into one angle.
 
 GENERAL RULES:

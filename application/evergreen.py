@@ -33,7 +33,10 @@ from application.model import *
 
 ############################## UI prep ##############################
 
-Page_col1, page_col2, page_col3 = st.columns([1,2,1])
+page_col1, page_col2, page_col3 = st.columns([1,3,1])
+
+with page_col1:
+    st.image('application/logo.png')
 
 # make a file named problem_metadata in the application directory which stores entry (dictionary)
 def save_problem_log(entry, filename="problem_metadata.json"):
