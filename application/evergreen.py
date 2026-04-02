@@ -334,10 +334,9 @@ with page_col2:
 
         # Debug. Shows what the component.html is receiving
         #st.code(html_code[:-2000])
-        col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
-        with col2:
-            # Run the flattened code and display in streamlit
-            component.html(html_code, height=1000, width=1000, scrolling=True)
+        
+        # Run the flattened code and display in streamlit
+        component.html(html_code, height=1000, width=1000, scrolling=True)
 
     else:
         st.info("Choose settings then click **Generate problem**.")
