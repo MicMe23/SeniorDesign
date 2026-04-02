@@ -86,7 +86,7 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Just the arrow", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)"],
+    "Generic": ["No Image", "Just the arrow", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)", "Placeholder"],
     "Aerospace Engineering": ["No Image","Just the arrow", "Plane (seen from the side)"],
     "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
@@ -111,7 +111,8 @@ unit_selector = {
 img_selector = {
     "Plane (seen from the side)": "application/assets/aerospace/f16_clipart_cropped.png",
     "Person (seen from above)": "application/assets/bme/man_running.png",
-    "Car (seen from above)": "application/assets/mechanical/red_f1_car.png"
+    "Car (seen from above)": "application/assets/mechanical/red_f1_car.png",
+    "Placeholder": "application/assets/Placeholder.png"
 }
 
 # init session states
