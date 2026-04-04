@@ -1,45 +1,55 @@
 {
     "domain": "Generic",
     "subtopic": "Coordinate System & Vectors",
-    "custom_context": "",
-    "level_of_detail": "Basic",
+    "custom_context": "make the problem about synchronized swimmers in a pool",
+    "level_of_detail": "Creative",
     "unit_type": "Velocity",
-    "velocity_unit": "Meters per second",
-    "matrix_name": "generated_3_vectors",
+    "velocity_unit": "Feet per second",
+    "matrix_name": "generated_4_vectors",
     "matrix_payload": {
         "vectors": [
             {
-                "magnitude": 22.159,
-                "x_component": 19.0,
-                "y_component": -9.0,
-                "z_component": 7.0,
-                "direction": "[295.346, 71.585]",
-                "x_location": -9.0,
-                "y_location": 6.0,
-                "z_location": 5.0
+                "magnitude": 13.601,
+                "x_component": -11.0,
+                "y_component": 8.0,
+                "z_component": 0.0,
+                "direction": 143.973,
+                "x_location": 5.0,
+                "y_location": 1.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 3.162,
-                "x_component": 0.0,
-                "y_component": 1.0,
-                "z_component": -3.0,
-                "direction": "[90, 161.565]",
-                "x_location": 1.0,
-                "y_location": 2.0,
-                "z_location": 5.0
+                "magnitude": 19.416,
+                "x_component": -16.0,
+                "y_component": -11.0,
+                "z_component": 0.0,
+                "direction": 214.509,
+                "x_location": 8.0,
+                "y_location": 5.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 20.1,
-                "x_component": -14.0,
-                "y_component": 12.0,
-                "z_component": 8.0,
-                "direction": "[139.399, 66.546]",
+                "magnitude": 14.213,
+                "x_component": -11.0,
+                "y_component": 9.0,
+                "z_component": 0.0,
+                "direction": 140.711,
                 "x_location": 6.0,
-                "y_location": -4.0,
-                "z_location": -5.0
+                "y_location": -9.0,
+                "z_location": 0.0
+            },
+            {
+                "magnitude": 9.22,
+                "x_component": -9.0,
+                "y_component": -2.0,
+                "z_component": 0.0,
+                "direction": 192.529,
+                "x_location": 4.0,
+                "y_location": -8.0,
+                "z_location": 0.0
             }
         ],
         "computed": {}
     },
-    "tasks": "1. hide theta in v1"
+    "tasks": "1. solve for the direction of  v1\n2.  find the  magnitude of v2\n3. find the x and y components of v3\n3. explain your answer\n"
 }
