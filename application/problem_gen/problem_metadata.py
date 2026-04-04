@@ -42,9 +42,9 @@ class ProblemMetadata:
                 
                 # positions realistic to a real game
                 if directions[i] == 1:
-                    random_vector.x_location = random.randint(-20, -5)
+                    random_vector.x_location = random.randint(-11, -2)
                 else:
-                    random_vector.x_location = random.randint(5, 20)
+                    random_vector.x_location = random.randint(2, 11)
 
                 random_vector.y_location = random.randint(-10, 10)
 
@@ -62,7 +62,7 @@ class ProblemMetadata:
                     if random_vector.x_component > 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
                         break
 
-                    random_vector = vectors.generate_random_vector()
+                    random_vector = vectors.generate_random_vector_2d()
 
                 # closeish together
                 random_vector.x_location = random.randint(-10, 10)

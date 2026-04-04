@@ -1,55 +1,55 @@
 {
-    "domain": "Biomedical Engineering",
+    "domain": "Generic",
     "subtopic": "Coordinate System & Vectors",
-    "custom_context": "",
-    "level_of_detail": "Basic",
+    "custom_context": "make the problem about synchronized swimmers in a pool",
+    "level_of_detail": "Creative",
     "unit_type": "Velocity",
-    "velocity_unit": "Meters per second",
-    "matrix_name": "generated_3_vectors",
+    "velocity_unit": "Feet per second",
+    "matrix_name": "generated_4_vectors",
     "matrix_payload": {
         "vectors": [
             {
-                "magnitude": 12.806,
-                "x_component": -10.0,
-                "y_component": -8.0,
-                "z_component": 2.0,
-                "direction": 218.66,
-                "x_location": 4.0,
+                "magnitude": 13.601,
+                "x_component": -11.0,
+                "y_component": 8.0,
+                "z_component": 0.0,
+                "direction": 143.973,
+                "x_location": 5.0,
                 "y_location": 1.0,
-                "z_location": 2.0
+                "z_location": 0.0
             },
             {
-                "magnitude": 17.205,
-                "x_component": 10.0,
-                "y_component": -14.0,
-                "z_component": 2.0,
-                "direction": 324.462,
-                "x_location": -3.0,
-                "y_location": 10.0,
-                "z_location": 2.0
+                "magnitude": 19.416,
+                "x_component": -16.0,
+                "y_component": -11.0,
+                "z_component": 0.0,
+                "direction": 214.509,
+                "x_location": 8.0,
+                "y_location": 5.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 11.705,
-                "x_component": 11.0,
-                "y_component": -4.0,
-                "z_component": 2.0,
-                "direction": 289.983,
-                "x_location": -2.0,
-                "y_location": 4.0,
-                "z_location": 2.0
+                "magnitude": 14.213,
+                "x_component": -11.0,
+                "y_component": 9.0,
+                "z_component": 0.0,
+                "direction": 140.711,
+                "x_location": 6.0,
+                "y_location": -9.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 22.023,
-                "x_component": -17.0,
-                "y_component": -14.0,
-                "z_component": 2.0,
-                "direction": 219.472,
-                "x_location": 10.0,
-                "y_location": 9.0,
-                "z_location": 2.0
+                "magnitude": 9.22,
+                "x_component": -9.0,
+                "y_component": -2.0,
+                "z_component": 0.0,
+                "direction": 192.529,
+                "x_location": 4.0,
+                "y_location": -8.0,
+                "z_location": 0.0
             }
         ],
         "computed": {}
     },
-    "tasks": "1. find x and y component for plane 1\n2. find magnitude of plane 2\n3. at this rate will the planes crash?"
+    "tasks": "1. solve for the direction of  v1\n2.  find the  magnitude of v2\n3. find the x and y components of v3\n3. explain your answer\n"
 }

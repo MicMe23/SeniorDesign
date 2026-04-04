@@ -29,9 +29,10 @@ magnitude, x_component, y_component, z_component, direction, x_location, y_locat
 
 DIRECTION RULES:
 - In 2D, direction is a single angle in degrees measured from the positive x-axis in the xy-plane.
+  1. direction: the angle in the xy-plane
 - In 3D, direction should be described using two angles:
-  1. azimuth (theta): the angle in the xy-plane from the positive x-axis
-  2. elevation/phi: the second direction angle returned by the backend
+  1. theta: the angle in the xy-plane from the positive x-axis
+  2. phi: the second direction angle returned by the backend
 - Do not collapse a 3D direction into one angle.
 
 GENERAL RULES:
@@ -53,18 +54,13 @@ There are three possible problem modes.
 - In 2D, the hidden value may be one of:
   magnitude, x_component, y_component, direction
 - In 3D, the hidden value may be one of:
-  magnitude, x_component, y_component, z_component, azimuth, phi
+  magnitude, x_component, y_component, z_component, theata, phi
 
 2) resultant_vector
 - Use this mode for vector addition problems.
-- GIVEN vectors should remain fully visible.
 - A backend-provided resultant vector is included as a row labeled RESULTANT.
-- Hide values ONLY in the RESULTANT row.
-- Hide 1 to 2 values in the RESULTANT row only.
-- Do NOT hide values in any GIVEN vector row.
-- Students should compute the resultant from the visible GIVEN vectors and solve for the hidden RESULTANT values.
-- For 2D resultants, use magnitude and one direction angle.
-- For 3D resultants, use magnitude and the direction pair (azimuth, phi), plus x/y/z components when appropriate.
+- For 2D resultants, use magnitude, one direction angle, and x/y componenets.
+- For 3D resultants, use magnitude and the direction pair (theata, phi), plus x/y/z components when appropriate.
 
 3) dot_product
 - Use this mode for dot product problems.
@@ -80,7 +76,7 @@ MODE SELECTION:
 
 STORY AND TASK REQUIREMENTS:
 - The story must match Subtopic {topic} strictly.
-- Provide 1 to 2 clear student tasks.
+- Provide 1 to 2 clear student tasks (if none are provided).
 - Keep the scenario consistent with {domain}.
 - User context: {injection}
 - Style: {context}
@@ -149,7 +145,7 @@ Return the problem formatted in clean Markdown using the following structure:
 | ...    | ...       | ...             | ...         | ...         | ...        | ...        |
 
 - If the problem is 3D, use this header:
-| Vector | Magnitude | Azimuth (deg) | Phi (deg) | X-Component | Y-Component | Z-Component | X-Location | Y-Location | Z-Location |
+| Vector | Magnitude | Theata (deg) | Phi (deg) | X-Component | Y-Component | Z-Component | X-Location | Y-Location | Z-Location |
 |--------|-----------|---------------|-----------|-------------|-------------|-------------|------------|------------|------------|
 | ...    | ...       | ...           | ...       | ...         | ...         | ...         | ...        | ...        | ...        |
 
