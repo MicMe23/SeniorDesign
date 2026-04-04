@@ -18,9 +18,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
 # project modules
-from application.problem_gen import vectors
-from application.problem_gen import calculate_problem_solution
-from application.problem_gen import problem_metadata
+from problem_gen import vectors
+from problem_gen import calculate_problem_solution
+from problem_gen import problem_metadata
 
 def build_llm_payload(df, subtopic):
     vector_array = []

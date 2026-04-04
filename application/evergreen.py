@@ -2,6 +2,8 @@
 import streamlit as st
 import streamlit.components.v1 as component
 
+import base64
+
 # data formatting
 import pandas as pd
 import numpy as np
@@ -18,18 +20,18 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
 # project modules
-from application.problem_gen import vectors
-from application import evergreen_utils
+from problem_gen import vectors
+import evergreen_utils
 
-from application.problem_gen import vector_matrix
-from application.problem_gen import problem_metadata
-from application.problem_gen import calculate_problem_solution
+from problem_gen import vector_matrix
+from problem_gen import problem_metadata
+from problem_gen import calculate_problem_solution
 
-from application.evergreen_utils import *
+from evergreen_utils import *
 
 # api and model code
-from application.test_api import *
-from application.model import *
+from test_api import *
+from model import *
 
 ############################## UI prep ##############################
 
@@ -37,6 +39,10 @@ page_col1, page_col2, page_col3 = st.columns([1,3,1])
 
 with page_col1:
     st.image('application/logo.png')
+
+def make_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
 # make a file named problem_metadata in the application directory which stores entry (dictionary)
 def save_problem_log(entry, filename="problem_metadata.json"):
@@ -83,8 +89,8 @@ context = {
 }
 
 asset_choices = {
-    "Generic": ["No Image", "Just the arrow", "F16 (seen from the side)", "Person (seen from above)", "F1 Car (seen from above)"],
-    "Aerospace Engineering": ["No Image","Just the arrow", "F16 (seen from the side)"],
+    "Generic": ["No Image", "Just the arrow", "Plane (seen from the side)", "Person (seen from above)", "Car (seen from above)", "Placeholder"],
+    "Aerospace Engineering": ["No Image","Just the arrow", "Plane (seen from the side)"],
     "Biomedical Engineering": ["No Image","Just the arrow", "Person (seen from above)"]
 }
 
@@ -102,6 +108,14 @@ unit_types = {
 unit_selector = {
     (2): ["Velocity", "Acceleration", "Force"],
     (4): ["Velocity", "Acceleration", "Force", "Torque"]
+}
+
+# Asset to img
+img_selector = {
+    "Plane (seen from the side)": "application/assets/aerospace/f16_clipart_cropped.png",
+    "Person (seen from above)": "application/assets/bme/man_running.png",
+    "Car (seen from above)": "application/assets/mechanical/red_f1_car.png",
+    "Placeholder": "application/assets/Placeholder.png"
 }
 
 # init session states
@@ -281,27 +295,52 @@ with page_col2:
             st.subheader("Generated Problem")
             st.markdown(st.session_state.problem)
 
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("Regenerate", use_container_width=True):
-                    with st.spinner("Regenerating…"):
-                        st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, matrix_payload, tasks)
-                        st.session_state.last_meta = {
-                "domain": domain,
-                "subtopic": subtopic,
-                "custom_context": injection,
-                "level_of_detail": context,
-                "unit_type": unit_type,
-                "velocity_unit": velocity_unit,
-                "matrix_name": st.session_state.matrix_name,
-                "matrix_payload": matrix_payload,
-                "tasks": tasks
-                }
-        # with st.container(border=False):
-        #     with open("diagram_gen\index.html", "r", encoding="utf-8") as f:
-        #         html_code = f.read()
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            if st.button("Regenerate", use_container_width=True):
+                with st.spinner("Regenerating…"):
+                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, matrix_payload, tasks)
+                    st.session_state.last_meta = {
+            "domain": domain,
+            "subtopic": subtopic,
+            "custom_context": injection,
+            "level_of_detail": context,
+            "unit_type": unit_type,
+            "velocity_unit": velocity_unit,
+            "matrix_name": st.session_state.matrix_name,
+            "matrix_payload": matrix_payload,
+            "tasks": tasks
+            }       
 
-        #     component.html(html_code)
+        # Generate the base64 version of the selected image to then turn it into a form
+        # javascript can read inline.
+        b64_img = make_base64(img_selector.get(image_info, "null"))
+        js_img = f'"data:image/png;base64,{b64_img}"'
+
+        # Read in unedited html and js files to run inline
+        with open("application\diagram_gen\index.html", "r") as html:
+            html_code = html.read()
+            html.close()
+        with open("application\diagram_gen\js\main.js", "r") as main:
+            html_main = main.read()
+            main.close()
+        with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
+            html_graph = graph.read()
+            graph.close()
+
+        # Read in the csv to inject it into the html when it runs
+        df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
+        csvInj = df.to_csv(index=False)
+            
+        # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
+        html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
+        html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
+
+        # Debug. Shows what the component.html is receiving
+        #st.code(html_code[:-2000])
+        
+        # Run the flattened code and display in streamlit
+        component.html(html_code, height=1000, width=1000, scrolling=True)
 
     else:
         st.info("Choose settings then click **Generate problem**.")
