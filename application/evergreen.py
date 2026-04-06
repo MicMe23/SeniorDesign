@@ -111,7 +111,8 @@ img_selector = {
     "Plane (seen from the side)": "application/assets/aerospace/f16_clipart_cropped.png",
     "Person (seen from above)": "application/assets/bme/man_running.png",
     "Car (seen from above)": "application/assets/mechanical/red_f1_car.png",
-    "Placeholder": "application/assets/Placeholder.png"
+    "Placeholder": "application/assets/Placeholder.png",
+    "Just the arrow": "application/assets/Empty.png"
 }
 
 # init session states
