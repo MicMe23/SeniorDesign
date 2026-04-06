@@ -125,6 +125,8 @@ if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
 if "dimension_mode" not in st.session_state:
     st.session_state.dimension_mode = "2D"
+if "matrix_payload" not in st.session_state:
+    st.session_state.matrix_payload = None
 
 
 with page_col2:
@@ -257,7 +259,7 @@ with page_col2:
 
                 st.session_state.matrix_df.to_csv('data/matrix_gen_output/vector_matrix.csv', index=False)
                 #building the payload to be injested by the LLM
-                matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, st.session_state.dimension_mode)
+                st.session_state.matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, st.session_state.dimension_mode)
 
                 log_entry = {
                 "domain": domain,
@@ -267,7 +269,7 @@ with page_col2:
                 "unit_type": unit_type,
                 "velocity_unit": velocity_unit,
                 "matrix_name": st.session_state.matrix_name,
-                "matrix_payload": matrix_payload,
+                "matrix_payload": st.session_state.matrix_payload,
                 "tasks": tasks,
                 "dimension_mode": dimension_mode
                 }
@@ -283,7 +285,7 @@ with page_col2:
                         context,
                         velocity_unit,
                         st.session_state.matrix_name,
-                        matrix_payload,
+                        st.session_state.matrix_payload,
                         tasks,
                         dimension_mode
                     )
@@ -303,7 +305,7 @@ with page_col2:
         with col1:
             if st.button("Regenerate", use_container_width=True):
                 with st.spinner("Regenerating…"):
-                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, matrix_payload, tasks, dimension_mode)
+                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, st.session_state.matrix_payload, tasks, dimension_mode)
                     st.session_state.last_meta = {
             "domain": domain,
             "subtopic": subtopic,
@@ -312,40 +314,42 @@ with page_col2:
             "unit_type": unit_type,
             "velocity_unit": velocity_unit,
             "matrix_name": st.session_state.matrix_name,
-            "matrix_payload": matrix_payload,
+            "matrix_payload": st.session_state.matrix_payload,
             "tasks": tasks,
             "dimension_mode": dimension_mode
             }       
 
-        # Generate the base64 version of the selected image to then turn it into a form
-        # javascript can read inline.
-        b64_img = make_base64(img_selector.get(image_info, "null"))
-        js_img = f'"data:image/png;base64,{b64_img}"'
+        print(image_info)
+        if image_info != "No Image":
+            # Generate the base64 version of the selected image to then turn it into a form
+            # javascript can read inline.
+            b64_img = make_base64(img_selector.get(image_info, "null"))
+            js_img = f'"data:image/png;base64,{b64_img}"'
 
-        # Read in unedited html and js files to run inline
-        with open("application\diagram_gen\index.html", "r") as html:
-            html_code = html.read()
-            html.close()
-        with open("application\diagram_gen\js\main.js", "r") as main:
-            html_main = main.read()
-            main.close()
-        with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
-            html_graph = graph.read()
-            graph.close()
+            # Read in unedited html and js files to run inline
+            with open("application\diagram_gen\index.html", "r") as html:
+                html_code = html.read()
+                html.close()
+            with open("application\diagram_gen\js\main.js", "r") as main:
+                html_main = main.read()
+                main.close()
+            with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
+                html_graph = graph.read()
+                graph.close()
 
-        # Read in the csv to inject it into the html when it runs
-        df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
-        csvInj = df.to_csv(index=False)
+            # Read in the csv to inject it into the html when it runs
+            df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
+            csvInj = df.to_csv(index=False)
+                
+            # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
+            html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
+            html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
+
+            # Debug. Shows what the component.html is receiving
+            #st.code(html_code[:-2000])
             
-        # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
-        html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
-        html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
-
-        # Debug. Shows what the component.html is receiving
-        #st.code(html_code[:-2000])
-        
-        # Run the flattened code and display in streamlit
-        component.html(html_code, height=1000, width=1000, scrolling=True)
+            # Run the flattened code and display in streamlit
+            component.html(html_code, height=1000, width=1000, scrolling=True)
 
     else:
         st.info("Choose settings then click **Generate problem**.")

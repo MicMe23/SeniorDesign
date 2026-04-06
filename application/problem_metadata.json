@@ -1,7 +1,7 @@
 {
     "domain": "Generic",
     "subtopic": "Coordinate System & Vectors",
-    "custom_context": "make it about dungeons and dragons",
+    "custom_context": "",
     "level_of_detail": "Basic",
     "unit_type": "Velocity",
     "velocity_unit": "Meters per second",
@@ -10,32 +10,32 @@
         "dimension_mode": "2D",
         "vectors": [
             {
-                "magnitude": 7.211,
-                "x_component": -6.0,
-                "y_component": 4.0,
-                "direction": 146.31,
-                "x_location": 10.0,
-                "y_location": 5.0
+                "magnitude": 20.616,
+                "x_component": 8.0,
+                "y_component": 19.0,
+                "direction": 67.166,
+                "x_location": -2.0,
+                "y_location": -9.0
             },
             {
-                "magnitude": 13.342,
-                "x_component": 13.0,
-                "y_component": -3.0,
-                "direction": 282.995,
+                "magnitude": 13.454,
+                "x_component": 10.0,
+                "y_component": -9.0,
+                "direction": 311.987,
                 "x_location": -10.0,
-                "y_location": 6.0
+                "y_location": 10.0
             },
             {
-                "magnitude": 18.028,
-                "x_component": -1.0,
-                "y_component": -18.0,
-                "direction": 266.82,
-                "x_location": 7.0,
-                "y_location": 10.0
+                "magnitude": 13.601,
+                "x_component": -13.0,
+                "y_component": 4.0,
+                "direction": 162.897,
+                "x_location": 8.0,
+                "y_location": -4.0
             }
         ],
         "computed": {}
     },
-    "tasks": "1. hide spell1's x and y component.\n2. hide spell 2's magnitude.",
+    "tasks": null,
     "dimension_mode": "2D"
 }

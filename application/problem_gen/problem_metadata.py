@@ -131,7 +131,7 @@ class ProblemMetadata:
                         if random_vector.x_component > 0 and abs(random_vector.x_component) > abs(random_vector.y_component):
                             break
 
-                        random_vector = vectors.generate_random_vector()
+                        random_vector = vectors.generate_random_vector_3d()
 
                     # closeish together
                     random_vector.x_location = random.randint(-10, 10)
