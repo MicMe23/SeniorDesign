@@ -4,25 +4,24 @@ import numpy as np
 import pandas as pd
 
 MAGNITUDE_OF_COORD_RANGE = 10
-VECTOR_HEADERS = ["magnitude", "x_component", "y_component", "z_component", "direction", "x_location", "y_location", "z_location"]
+VECTOR_HEADERS_2D = ["magnitude", "x_component", "y_component", "direction", "x_location", "y_location"]
+VECTOR_HEADERS_3D = ["magnitude", "x_component", "y_component", "z_component", "direction", "x_location", "y_location", "z_location"]
 DEFAULT_Z_VALUES_IN_2D = 0
 
 #convert a vector to a dataframe for the csv display and to be in payload for llm
-def vectors_to_df(vector_array) -> pd.DataFrame:
+def vectors_to_df(vector_array, dimension_mode) -> pd.DataFrame:
     rows = []
     for v in vector_array:
         direction = v.get_direction()
 
-        if v.number_of_dimensions == 2:
+        if dimension_mode == "2D":
             rows.append({
                 "magnitude": round(v.get_magnitude(), 3),
                 "x_component": float(v.x_component),
                 "y_component": float(v.y_component),
-                "z_component": float(v.z_component),
                 "direction": round(direction, 3),
                 "x_location": float(v.x_location),
                 "y_location": float(v.y_location),
-                "z_location": float(v.z_location)
             })
         else:
             theta = round(direction[0], 3)
@@ -39,8 +38,10 @@ def vectors_to_df(vector_array) -> pd.DataFrame:
                 "y_location": float(v.y_location),
                 "z_location": float(v.z_location)
             })
-
-    return pd.DataFrame(rows, columns=VECTOR_HEADERS)
+    if dimension_mode == "2D":
+        return pd.DataFrame(rows, columns=VECTOR_HEADERS_2D)
+    else:
+        return pd.DataFrame(rows, columns=VECTOR_HEADERS_3D)
 
 # finally convert to a list of dicts for the LLM
 def df_to_matrix_payload(df: pd.DataFrame):
