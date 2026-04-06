@@ -319,7 +319,6 @@ with page_col2:
             "dimension_mode": dimension_mode
             }       
 
-        print(image_info)
         if image_info != "No Image":
             # Generate the base64 version of the selected image to then turn it into a form
             # javascript can read inline.
