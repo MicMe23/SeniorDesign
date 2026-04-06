@@ -1,55 +1,41 @@
 {
     "domain": "Generic",
     "subtopic": "Coordinate System & Vectors",
-    "custom_context": "make the problem about synchronized swimmers in a pool",
-    "level_of_detail": "Creative",
+    "custom_context": "make it about dungeons and dragons",
+    "level_of_detail": "Basic",
     "unit_type": "Velocity",
-    "velocity_unit": "Feet per second",
-    "matrix_name": "generated_4_vectors",
+    "velocity_unit": "Meters per second",
+    "matrix_name": "generated_3_vectors",
     "matrix_payload": {
+        "dimension_mode": "2D",
         "vectors": [
             {
-                "magnitude": 13.601,
-                "x_component": -11.0,
-                "y_component": 8.0,
-                "z_component": 0.0,
-                "direction": 143.973,
-                "x_location": 5.0,
-                "y_location": 1.0,
-                "z_location": 0.0
+                "magnitude": 7.211,
+                "x_component": -6.0,
+                "y_component": 4.0,
+                "direction": 146.31,
+                "x_location": 10.0,
+                "y_location": 5.0
             },
             {
-                "magnitude": 19.416,
-                "x_component": -16.0,
-                "y_component": -11.0,
-                "z_component": 0.0,
-                "direction": 214.509,
-                "x_location": 8.0,
-                "y_location": 5.0,
-                "z_location": 0.0
+                "magnitude": 13.342,
+                "x_component": 13.0,
+                "y_component": -3.0,
+                "direction": 282.995,
+                "x_location": -10.0,
+                "y_location": 6.0
             },
             {
-                "magnitude": 14.213,
-                "x_component": -11.0,
-                "y_component": 9.0,
-                "z_component": 0.0,
-                "direction": 140.711,
-                "x_location": 6.0,
-                "y_location": -9.0,
-                "z_location": 0.0
-            },
-            {
-                "magnitude": 9.22,
-                "x_component": -9.0,
-                "y_component": -2.0,
-                "z_component": 0.0,
-                "direction": 192.529,
-                "x_location": 4.0,
-                "y_location": -8.0,
-                "z_location": 0.0
+                "magnitude": 18.028,
+                "x_component": -1.0,
+                "y_component": -18.0,
+                "direction": 266.82,
+                "x_location": 7.0,
+                "y_location": 10.0
             }
         ],
         "computed": {}
     },
-    "tasks": "1. solve for the direction of  v1\n2.  find the  magnitude of v2\n3. find the x and y components of v3\n3. explain your answer\n"
+    "tasks": "1. hide spell1's x and y component.\n2. hide spell 2's magnitude.",
+    "dimension_mode": "2D"
 }

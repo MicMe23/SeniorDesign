@@ -1,10 +1,10 @@
 [theme]
 base="dark"
 
-primaryColor="#2E7D32"              # evergreen green
-#backgroundColor="#0E1117"           # dark background
-#secondaryBackgroundColor="#161B22"  # card/sidebar background
-#textColor="#FAFAFA"
+primaryColor="#4F7F45"
+backgroundColor="#F3F4EE"
+secondaryBackgroundColor="#C9D8B0"
+textColor="#1F2A1F"
 font="sans serif"
 
 [server]
