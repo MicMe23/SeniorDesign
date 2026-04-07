@@ -7,15 +7,14 @@ try:
 except:
     raise OpenAIError("No API key provided.")
 
-def generate_problem(domain, topic, image_info, injection, context, velocity_units, matrix_name, MATRIX, tasks):
+def generate_problem(domain, topic, image_info, injection, context, velocity_units, matrix_name, MATRIX, tasks, dimension_mode):
 
     SYSTEM = f"""
 You are generating a {domain}-themed engineering homework problem for topic {topic}.
 
 DIMENSION RULES:
 - The problem may be either 2D or 3D.
-- If all z_component values and all z_location values are 0, treat the problem as 2D.
-- If any z_component or z_location value is nonzero, treat the problem as 3D.
+- If {dimension_mode} is 2D, treat the problem as 2D. Otherwise the problem is 3D
 - Do not convert a 3D problem into 2D.
 - Do not ignore z-component or z-location in a 3D problem.
 
@@ -50,7 +49,7 @@ There are three possible problem modes.
 1) independent_vectors
 - Use this mode for subtopics where students solve for missing attributes of individual vectors.
 - Do NOT hide x_location, y_location, or z_location.
-- Do NOT hide more than one value per vector row unless tasks explicitly require a whole vector to be hidden.
+- Do NOT hide more than one value per vector row unless tasks explicitly says to.
 - In 2D, the hidden value may be one of:
   magnitude, x_component, y_component, direction
 - In 3D, the hidden value may be one of:

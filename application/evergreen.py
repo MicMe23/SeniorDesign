@@ -76,14 +76,10 @@ subtopic_list = [
     "4. Statically Equivalent Systems"
 ]
 
-scenario = [
-    "No Scenario 2D",
-    "No Scenario 3D",
-    "Soccer Match 2D",
-    "Soccer Match 3D",
-    "Aircraft Formation 2D",
-    "Aircraft Formation 3D"
-]
+scenario_dimension = {
+    "2D": ["No Scenario", "Soccer Match", "Aircraft Formation"],
+    "3D": ["No Scenario", "Soccer Match", "Aircraft Formation"]
+}
 
 # --- Context selector ---
 # Connect a selectbox choice to its description
@@ -119,7 +115,8 @@ img_selector = {
     "Plane (seen from the side)": "application/assets/aerospace/f16_clipart_cropped.png",
     "Person (seen from above)": "application/assets/bme/man_running.png",
     "Car (seen from above)": "application/assets/mechanical/red_f1_car.png",
-    "Placeholder": "application/assets/Placeholder.png"
+    "Placeholder": "application/assets/Placeholder.png",
+    "Just the arrow": "application/assets/Empty.png"
 }
 
 # init session states
@@ -131,6 +128,12 @@ if "matrix_df" not in st.session_state:
     st.session_state.matrix_df = None
 if "matrix_name" not in st.session_state:
     st.session_state.matrix_name = None
+if "dimension_mode" not in st.session_state:
+    st.session_state.dimension_mode = "2D"
+if "matrix_payload" not in st.session_state:
+    st.session_state.matrix_payload = None
+
+
 with page_col2:
     st.divider()
     ################ Section 1: Problem settings #################
@@ -163,26 +166,21 @@ with page_col2:
     st.divider()
 
     st.header("Matrix Gen")
-    # Displays the Generate Matrix button
+    # Displays the Generate Matrix controls
     # number of vectors for generated matrix
-    matrix_col1, matrix_col2 = st.columns(2)
+    num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
 
-    with matrix_col1:
-        num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+    dimension_mode = st.selectbox("Dimension", options=["2D", "3D"], index=0)
+    st.session_state.dimension_mode = dimension_mode
 
-    with matrix_col2:
-        selected_scenario = st.selectbox("Scenario", options=scenario)
-
-    with matrix_col1:
-        uploaded_csv = st.file_uploader(
-            "Upload a CSV matrix",
-            type=["csv"],
-            help="Upload a CSV to load directly into the matrix editor."
-        )
-
-    with matrix_col2:
-        st.markdown("##### ")
-        generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
+    selected_scenario = st.selectbox("Scenario", options=scenario_dimension[dimension_mode], index=0)
+    
+    uploaded_csv = st.file_uploader(
+        "Upload a CSV matrix",
+        type=["csv"],
+        help="Upload a CSV to load directly into the matrix editor."
+    )
+    generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
 
     EXPECTED_COLUMNS = [
         "magnitude",
@@ -202,20 +200,16 @@ with page_col2:
             # remove accidental spaces in headers
             uploaded_df.columns = uploaded_df.columns.str.strip()
 
-            missing_cols = [col for col in EXPECTED_COLUMNS if col not in uploaded_df.columns]
-            if missing_cols:
-                st.error(f"Uploaded CSV is missing required columns: {missing_cols}")
-            else:
-                # keep only the columns you care about, in the right order
-                uploaded_df = uploaded_df[EXPECTED_COLUMNS]
+            # keep only the columns you care about, in the right order
+            uploaded_df = uploaded_df[EXPECTED_COLUMNS]
 
-                st.session_state.matrix_df = uploaded_df
-                st.session_state.matrix_name = uploaded_csv.name
+            st.session_state.matrix_df = uploaded_df
+            st.session_state.matrix_name = uploaded_csv.name
 
-                st.success(f"Loaded CSV: {uploaded_csv.name}")
+            st.success(f"Loaded CSV: {uploaded_csv.name}")
 
         except Exception as e:
-            st.error(f"Could not read uploaded CSV: {e}")
+            st.error(f"Could not read uploaded CSV: {e}. Make sure your csv uses the correct fileds for the matrix.")
 
     # ---------------- csv editor ----------------
     if st.session_state.matrix_df is not None:
@@ -251,12 +245,13 @@ with page_col2:
             problem_type = subtopic,
             number_of_vectors=int(num_vectors),
             units = velocity_unit,
-            scenario = selected_scenario
+            scenario = selected_scenario,
+            dimension_mode = dimension_mode,
         )
         pm.set_vector_array_randomly()
 
         # Convert to DataFrame for the editor and LLM
-        st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array)
+        st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array, dimension_mode=dimension_mode)
 
         # debug line
         st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
@@ -271,7 +266,7 @@ with page_col2:
 
                 st.session_state.matrix_df.to_csv('data/matrix_gen_output/vector_matrix.csv', index=False)
                 #building the payload to be injested by the LLM
-                matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, )
+                st.session_state.matrix_payload = evergreen_utils.build_llm_payload(st.session_state.matrix_df, subtopic, st.session_state.dimension_mode)
 
                 log_entry = {
                 "domain": domain,
@@ -281,8 +276,9 @@ with page_col2:
                 "unit_type": unit_type,
                 "velocity_unit": velocity_unit,
                 "matrix_name": st.session_state.matrix_name,
-                "matrix_payload": matrix_payload,
-                "tasks": tasks
+                "matrix_payload": st.session_state.matrix_payload,
+                "tasks": tasks,
+                "dimension_mode": dimension_mode
                 }
 
                 save_problem_log(log_entry)
@@ -296,8 +292,9 @@ with page_col2:
                         context,
                         velocity_unit,
                         st.session_state.matrix_name,
-                        matrix_payload,
-                        tasks
+                        st.session_state.matrix_payload,
+                        tasks,
+                        dimension_mode
                     )
 
                     st.session_state.last_meta = log_entry
@@ -315,7 +312,7 @@ with page_col2:
         with col1:
             if st.button("Regenerate", use_container_width=True):
                 with st.spinner("Regenerating…"):
-                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, matrix_payload, tasks)
+                    st.session_state.problem = generate_problem(domain, subtopic, image_info, injection, context, velocity_unit, st.session_state.matrix_name, st.session_state.matrix_payload, tasks, dimension_mode)
                     st.session_state.last_meta = {
             "domain": domain,
             "subtopic": subtopic,
@@ -324,29 +321,38 @@ with page_col2:
             "unit_type": unit_type,
             "velocity_unit": velocity_unit,
             "matrix_name": st.session_state.matrix_name,
-            "matrix_payload": matrix_payload,
-            "tasks": tasks
+            "matrix_payload": st.session_state.matrix_payload,
+            "tasks": tasks,
+            "dimension_mode": dimension_mode
             }       
 
-        # Generate the base64 version of the selected image to then turn it into a form
-        # javascript can read inline.
-        b64_img = make_base64(img_selector.get(image_info, "null"))
-        js_img = f'"data:image/png;base64,{b64_img}"'
+        if image_info != "No Image":
+            # Generate the base64 version of the selected image to then turn it into a form
+            # javascript can read inline.
+            b64_img = make_base64(img_selector.get(image_info, "null"))
+            js_img = f'"data:image/png;base64,{b64_img}"'
 
-        # Read in unedited html and js files to run inline
-        with open("application\diagram_gen\index.html", "r") as html:
-            html_code = html.read()
-            html.close()
-        with open("application\diagram_gen\js\main.js", "r") as main:
-            html_main = main.read()
-            main.close()
-        with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
-            html_graph = graph.read()
-            graph.close()
+            # Read in unedited html and js files to run inline
+            with open("application\diagram_gen\index.html", "r") as html:
+                html_code = html.read()
+                html.close()
+            with open("application\diagram_gen\js\main.js", "r") as main:
+                html_main = main.read()
+                main.close()
+            with open("application\diagram_gen\js\cartesianGraph.js", "r") as graph:
+                html_graph = graph.read()
+                graph.close()
 
-        # Read in the csv to inject it into the html when it runs
-        df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
-        csvInj = df.to_csv(index=False)
+            # Read in the csv to inject it into the html when it runs
+            df = pd.read_csv("data/matrix_gen_output/vector_matrix.csv")
+            csvInj = df.to_csv(index=False)
+                
+            # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
+            html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
+            html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
+
+            # Debug. Shows what the component.html is receiving
+            #st.code(html_code[:-2000])
             
         # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
         html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
