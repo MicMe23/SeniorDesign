@@ -69,7 +69,7 @@ def calculate_direction_2d(x_component, y_component):
     elif x_component <= 0 and y_component <= 0:
         theta = 180 + math.degrees(math.atan(y_component/x_component))
     elif x_component >= 0 and y_component <= 0:
-        theta = 270 + math.degrees(math.atan(-y_component/x_component))
+        theta = 360 + math.degrees(math.atan(y_component/x_component))
     else:
         raise Exception(f"Error in vector direction calculation: x = {x_component}, y = {y_component}")
     return theta

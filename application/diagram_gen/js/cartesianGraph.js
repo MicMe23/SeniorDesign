@@ -233,7 +233,7 @@ class CartesianGraph {
         }
 
         if (flipVertical) {
-          console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
+          console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical, normalizedAngle);
           return `
           translate(${x}, ${y})
           scale(1, -1)
@@ -242,7 +242,7 @@ class CartesianGraph {
           `
         }
 
-        console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
+        console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical, normalizedAngle);
 
 
         return `rotate(${rotation}, ${x}, ${y})`;
