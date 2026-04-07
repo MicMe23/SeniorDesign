@@ -10,27 +10,27 @@
         "dimension_mode": "2D",
         "vectors": [
             {
-                "magnitude": 20.591,
-                "x_component": -18.0,
-                "y_component": 10.0,
-                "direction": 150.945,
-                "x_location": 8.0,
-                "y_location": -5.0
+                "magnitude": 14.0,
+                "x_component": -14.0,
+                "y_component": 0.0,
+                "direction": 180.0,
+                "x_location": 10.0,
+                "y_location": -1.0
             },
             {
-                "magnitude": 17.692,
-                "x_component": -13.0,
-                "y_component": 12.0,
-                "direction": 137.291,
-                "x_location": 4.0,
-                "y_location": -4.0
+                "magnitude": 8.944,
+                "x_component": 8.0,
+                "y_component": -4.0,
+                "direction": 296.565,
+                "x_location": -1.0,
+                "y_location": 2.0
             },
             {
-                "magnitude": 17.205,
-                "x_component": 10.0,
-                "y_component": -14.0,
-                "direction": 324.462,
-                "x_location": -3.0,
+                "magnitude": 16.155,
+                "x_component": -6.0,
+                "y_component": -15.0,
+                "direction": 248.199,
+                "x_location": 6.0,
                 "y_location": 8.0
             }
         ],

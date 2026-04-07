@@ -35,6 +35,8 @@ from model import *
 
 ############################## UI prep ##############################
 
+st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
+
 # Keep the main content slightly narrower than full screen width.
 page_col1, page_col2, page_col3 = st.columns([1, 10, 1])
 
@@ -49,8 +51,6 @@ def save_problem_log(entry, filename="problem_metadata.json"):
         json.dump(entry, f, indent=4)
 
 with page_col2:
-    st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
-    
     # Load and display centered logo
     with open("application/assets/streamlit-app/Evergreen Classroom Logo-01.png", "rb") as f:
         logo_data = base64.b64encode(f.read()).decode()
@@ -132,6 +132,8 @@ if "dimension_mode" not in st.session_state:
     st.session_state.dimension_mode = "2D"
 if "matrix_payload" not in st.session_state:
     st.session_state.matrix_payload = None
+if "uploaded_csv_name" not in st.session_state:
+    st.session_state.uploaded_csv_name = None
 
 
 with page_col2:
@@ -182,6 +184,19 @@ with page_col2:
     )
     generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
 
+    if generate_matrix_clicked:
+        pm = problem_metadata.ProblemMetadata(
+            problem_type=subtopic,
+            number_of_vectors=int(num_vectors),
+            units=velocity_unit,
+            scenario=selected_scenario,
+            dimension_mode=dimension_mode,
+        )
+        pm.set_vector_array_randomly()
+        st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array, dimension_mode=dimension_mode)
+        st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
+        st.rerun()
+
     EXPECTED_COLUMNS = [
         "magnitude",
         "x_component",
@@ -193,7 +208,7 @@ with page_col2:
         "z_location"
     ]
 
-    if uploaded_csv is not None:
+    if uploaded_csv is not None and st.session_state.uploaded_csv_name != uploaded_csv.name:
         try:
             uploaded_df = pd.read_csv(uploaded_csv)
 
@@ -205,6 +220,7 @@ with page_col2:
 
             st.session_state.matrix_df = uploaded_df
             st.session_state.matrix_name = uploaded_csv.name
+            st.session_state.uploaded_csv_name = uploaded_csv.name
 
             st.success(f"Loaded CSV: {uploaded_csv.name}")
 
@@ -225,10 +241,12 @@ with page_col2:
             with col1:
                 if st.button("Apply Edits", use_container_width=True):
                     st.session_state.matrix_df = edited_df
+                    st.rerun()
 
             with col2:
                 if st.button("Recalculate Magnitude / Direction", use_container_width=True):
                     st.session_state.matrix_df = recalculate_matrix_df(edited_df)
+                    st.rerun()
     else:
         st.info("Please generate a matrix to start editing.")
     st.divider()
@@ -237,25 +255,6 @@ with page_col2:
     generate_prompt_clicked = st.button("Generate Problem", type="primary", use_container_width=True)
 
     st.divider()
-
-    # ---------------- Matrix generation ----------------
-    if generate_matrix_clicked:
-        # Create a new matrix
-        pm = problem_metadata.ProblemMetadata(
-            problem_type = subtopic,
-            number_of_vectors=int(num_vectors),
-            units = velocity_unit,
-            scenario = selected_scenario,
-            dimension_mode = dimension_mode,
-        )
-        pm.set_vector_array_randomly()
-
-        # Convert to DataFrame for the editor and LLM
-        st.session_state.matrix_df = vectors.vectors_to_df(pm.vector_array, dimension_mode=dimension_mode)
-
-        # debug line
-        st.session_state.matrix_name = f"generated_{int(num_vectors)}_vectors"
-
 
     # ---------- Generate Button Logic ----------
     if generate_prompt_clicked:
