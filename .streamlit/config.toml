@@ -1,11 +1,10 @@
 [theme]
-base="dark"
 
-primaryColor="#2E7D32"              # evergreen green
-#backgroundColor="#0E1117"           # dark background
-#secondaryBackgroundColor="#161B22"  # card/sidebar background
-#textColor="#FAFAFA"
-font="sans serif"
+primaryColor="#205C2E"              # evergreen green
+#backgroundColor="#205C2E"           # dark background
+#secondaryBackgroundColor="#C7DAB1"  # card/sidebar background
+#textColor="#000000"
+font="acumen"
 
 [server]
 enableStaticServing = true

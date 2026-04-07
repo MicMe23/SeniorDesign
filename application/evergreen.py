@@ -35,7 +35,8 @@ from model import *
 
 ############################## UI prep ##############################
 
-Page_col1, page_col2, page_col3 = st.columns([1,2,1])
+# Keep the main content slightly narrower than full screen width.
+page_col1, page_col2, page_col3 = st.columns([1, 10, 1])
 
 def make_base64(path):
     with open(path, "rb") as f:
@@ -49,7 +50,13 @@ def save_problem_log(entry, filename="problem_metadata.json"):
 
 with page_col2:
     st.set_page_config(page_title="Evergreen Classroom", page_icon="🌲", layout="wide")
-    st.title("Evergreen Classroom")
+    
+    # Load and display centered logo
+    with open("application/assets/streamlit-app/Evergreen Classroom Logo-01.png", "rb") as f:
+        logo_data = base64.b64encode(f.read()).decode()
+    st.markdown(f"<div style='text-align: center;'><img src='data:image/png;base64,{logo_data}' width='300'></div>", unsafe_allow_html=True)
+    
+    # st.title("Evergreen Classroom")
 
 # --- Subtopic selector ---
 # Connect subsection numbers to their corresponding titles
@@ -129,41 +136,53 @@ with page_col2:
     ################ Section 1: Problem settings #################
     st.header("Problem Settings")
 
-    col1, col2 = st.columns([1,1])
+    settings_col1, settings_col2 = st.columns(2)
 
-    with col1:
+    with settings_col1:
         subtopic = st.selectbox("Topic", options=subtopic_list, index=0)
 
-    with col2:
+    with settings_col2:
         context = st.selectbox("Level of Detail", options=context)
 
-    with col1:
+    with settings_col1:
         domain = st.selectbox("Major", options=["Generic", "Aerospace Engineering", "Biomedical Engineering"], index=0)
 
-    with col2:
+    with settings_col2:
         image_info = st.selectbox("Image", options=asset_choices[domain], index=0)
 
-    with col1:
+    settings_col5, settings_col6 = st.columns(2)
+
+    with settings_col5:
         unit_type = st.selectbox("Unit Type", options=list(unit_types.keys()), index=0)
 
-    with col2:
+    with settings_col6:
         velocity_unit = st.selectbox("Exact Unit", options=unit_types[unit_type], index=0)
 
-    injection = st.text_input("Custom context (1 - 2 scentences)")
-    tasks = st.text_area("Task list: number tasks if you have specific tasks in mind", value=None, height=300 )
+    injection = st.text_input("Custom context (1 - 2 sentences)")
+    tasks = st.text_area("Task list (number tasks if you have specific tasks in mind)", value=None, height=240)
     st.divider()
 
     st.header("Matrix Gen")
     # Displays the Generate Matrix button
     # number of vectors for generated matrix
-    num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
-    selected_scenario = st.selectbox("Scenario", options=scenario)
-    uploaded_csv = st.file_uploader(
-        "Upload a CSV matrix",
-        type=["csv"],
-        help="Upload a CSV to load directly into the matrix editor."
-    )
-    generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
+    matrix_col1, matrix_col2 = st.columns(2)
+
+    with matrix_col1:
+        num_vectors = st.number_input("Number of vectors", min_value=1, max_value=10, value=3, step=1)
+
+    with matrix_col2:
+        selected_scenario = st.selectbox("Scenario", options=scenario)
+
+    with matrix_col1:
+        uploaded_csv = st.file_uploader(
+            "Upload a CSV matrix",
+            type=["csv"],
+            help="Upload a CSV to load directly into the matrix editor."
+        )
+
+    with matrix_col2:
+        st.markdown("##### ")
+        generate_matrix_clicked = st.button("Generate Matrix", type="primary", use_container_width=True)
 
     EXPECTED_COLUMNS = [
         "magnitude",
@@ -200,7 +219,7 @@ with page_col2:
 
     # ---------------- csv editor ----------------
     if st.session_state.matrix_df is not None:
-        with st.container(border=True, width = 750):
+        with st.container(border=True):
             st.subheader("Edit your data below:")
             edited_df = st.data_editor(
                 st.session_state.matrix_df,
@@ -332,12 +351,13 @@ with page_col2:
         # Make all scripts inline and inject all changes that come from outside the html file: csv, image, other html files
         html_code = html_code.replace('<script src="js/cartesianGraph.js"></script>', f'<script>{html_graph}</script>')
         html_code = html_code.replace('<script src="js/main.js"></script>', f'<script> let injection = `{csvInj}`; let img = {js_img};</script><script>{html_main}</script>')
+        html_code = html_code.replace("<body>", '<body style="margin:0; overflow:hidden;">')
 
         # Debug. Shows what the component.html is receiving
         #st.code(html_code[:-2000])
-        
-        # Run the flattened code and display in streamlit
-        component.html(html_code, height=1000, width=1000, scrolling=True)
+
+        # Match component frame height to the rendered 1000x1000 SVG so no internal scroll is needed.
+        component.html(html_code, height=1008, scrolling=False)
 
     else:
         st.info("Choose settings then click **Generate problem**.")
