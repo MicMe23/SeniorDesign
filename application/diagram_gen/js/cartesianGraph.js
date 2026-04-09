@@ -54,6 +54,13 @@ class CartesianGraph {
         .attr('transform', `translate(0, ${vis.height})`)
         .call(vis.xGrid);
 
+      // Enforce subtle gridline styling in JS in case external CSS does not apply.
+      vis.xGridGroup.selectAll('.tick line')
+        .attr('stroke', '#d3d3d3')
+        .attr('stroke-opacity', 0.12)
+        .attr('shape-rendering', 'crispEdges');
+      vis.xGridGroup.select('.domain').attr('stroke-width', 0);
+
       vis.yGrid = d3.axisLeft(vis.yScale)
         .ticks(20)
         .tickSize(-vis.width)
@@ -63,6 +70,12 @@ class CartesianGraph {
         .attr('class', 'grid y-grid')
         .attr('transform', `translate(0, 0)`)
         .call(vis.yGrid);
+
+      vis.yGridGroup.selectAll('.tick line')
+        .attr('stroke', '#919191')
+        .attr('stroke-opacity', 0.3)
+        .attr('shape-rendering', 'crispEdges');
+      vis.yGridGroup.select('.domain').attr('stroke-width', 0);
 
       // ---- AXES ----
       // Center the axes at (0,0) and draw them on top of the grid
@@ -220,7 +233,7 @@ class CartesianGraph {
         }
 
         if (flipVertical) {
-          console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
+          console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical, normalizedAngle);
           return `
           translate(${x}, ${y})
           scale(1, -1)
@@ -229,7 +242,7 @@ class CartesianGraph {
           `
         }
 
-        console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical);
+        console.log(String.fromCharCode(65 + p.i), p.d.direction, rotation, flipVertical, normalizedAngle);
 
 
         return `rotate(${rotation}, ${x}, ${y})`;

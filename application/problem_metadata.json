@@ -1,5 +1,5 @@
 {
-    "domain": "Aerospace Engineering",
+    "domain": "Generic",
     "subtopic": "Coordinate System & Vectors",
     "custom_context": "",
     "level_of_detail": "Basic",
@@ -10,28 +10,34 @@
         "dimension_mode": "2D",
         "vectors": [
             {
-                "magnitude": 14.142,
-                "x_component": 2.0,
-                "y_component": -14.0,
-                "direction": 351.87,
+                "magnitude": 17.72,
+                "x_component": -17.0,
+                "y_component": 5.0,
+                "z_component": 0.0,
+                "direction": 163.61,
                 "x_location": 7.0,
-                "y_location": 9.0
+                "y_location": -3.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 10.817,
-                "x_component": -9.0,
+                "magnitude": 10.0,
+                "x_component": 8.0,
                 "y_component": -6.0,
-                "direction": 213.69,
-                "x_location": 3.0,
-                "y_location": 2.0
+                "z_component": 0.0,
+                "direction": 323.13,
+                "x_location": 0.0,
+                "y_location": 1.0,
+                "z_location": 0.0
             },
             {
-                "magnitude": 8.246,
-                "x_component": 2.0,
-                "y_component": -8.0,
-                "direction": 345.964,
-                "x_location": 0.0,
-                "y_location": -2.0
+                "magnitude": 10.44,
+                "x_component": 10.0,
+                "y_component": -3.0,
+                "z_component": 0.0,
+                "direction": 343.301,
+                "x_location": -4.0,
+                "y_location": 1.0,
+                "z_location": 0.0
             }
         ],
         "computed": {}

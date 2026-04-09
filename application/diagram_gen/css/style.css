@@ -1,6 +1,6 @@
 .grid line {
-  stroke: #999;
-  stroke-opacity: 0.2;
+  stroke: #d3d3d3;
+  stroke-opacity: 0.12;
   shape-rendering: crispEdges;
 }
 
